@@ -5,36 +5,17 @@ import { faShoppingBag } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faDrum } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
-  const productCount = 150;
-  const categories = [
-    { id: 1, name: "Baterías", description: "Kits completos y componentes individuales" },
-    { id: 2, name: "Percusión Latina", description: "Congas, bongos, timbales y más" },
-    { id: 3, name: "Accesorios", description: "Baquetas, platillos y hardware" },
-    { id: 4, name: "Instrumentos Étnicos", description: "Djembes, cajones y percusión mundial" }
-  ];
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: categories } = await supabase.from("categories").select("*");
+  const { data: products } = await supabase.from("products").select("*");
 
-  const featuredProducts = {
-    bestseller: {
-      name: "Batería Pearl Export",
-      description: "Kit completo profesional de 5 piezas",
-      price: 1250,
-      image: null
-    },
-    latest: {
-      name: "Cajón Flamenco Artesanal",
-      description: "Hecho a mano con maderas selectas",
-      price: 280,
-      image: null
-    },
-    onSale: {
-      name: "Set de Bongos LP",
-      description: "Bongos profesionales Latin Percussion",
-      price: 320,
-      image: null
-    }
-  };
+  const productCount = products?.length || 0;
+  const bestseller = products?.find((product) => product.stock_quantity < 10)
+  const latest = products?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
+  const onSale = products?.find((product) => product.stock_quantity > 30)
 
 
   return (
@@ -81,9 +62,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
-              <div className="w-40 h-40 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Image src="/logo.png" alt="Drum" width={160} height={160} />
+            <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
+              <div className="w-50 h-50 rounded-full flex items-center justify-center mx-auto mb-6 bg-white">
+                <Image src="/perc.png" alt="Drum" width={160} height={160} />
               </div>
               <h3 className="text-2xl font-semibold mb-4">Productos Premium</h3>
               <p className="text-gray-200">Importamos de marcas internacionales reconocidas.</p>
@@ -101,12 +82,10 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
-            {categories.map((category) => (
+            {categories?.map((category) => (
               <div key={category.id} className="bg-white border border-gray-200 rounded-xl p-8 text-center hover:shadow-xl transition-shadow duration-300 group">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300">
-                  <svg className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
+                  <FontAwesomeIcon icon={faDrum} className="text-3xl text-percussion" />
                 </div>
                 <h4 className="text-xl font-semibold mb-4 text-gray-900">
                   <a href={`/productos?categoria=${category.id}`} className="hover:text-blue-600 transition-colors duration-300">
@@ -147,10 +126,10 @@ export default function Home() {
             {/* Bestseller Product */}
             <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-64 bg-gray-100 flex items-center justify-center">
-                {featuredProducts.bestseller.image ? (
+                {bestseller.image ? (
                   <img
-                    src={featuredProducts.bestseller.image}
-                    alt={featuredProducts.bestseller.name}
+                    src={bestseller.image}
+                    alt={bestseller.name}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -163,9 +142,9 @@ export default function Home() {
                 </span>
               </div>
               <div className="p-6">
-                <h5 className="text-xl font-semibold mb-3">{featuredProducts.bestseller.name}</h5>
-                <p className="text-gray-600 mb-4">{featuredProducts.bestseller.description}</p>
-                <div className="text-2xl font-bold text-blue-600 mb-4">${featuredProducts.bestseller.price}</div>
+                <h5 className="text-xl font-semibold mb-3">{bestseller.name}</h5>
+                <p className="text-gray-600 mb-4">{bestseller.description}</p>
+                <div className="text-2xl font-bold text-blue-600 mb-4">${bestseller.selling_price.toFixed(2)}</div>
                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center">
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293A1 1 0 005 16h16M16 16a2 2 0 11-4 0 2 2 0 014 0zM8 16a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -178,10 +157,10 @@ export default function Home() {
             {/* Latest Product */}
             <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-64 bg-gray-100 flex items-center justify-center">
-                {featuredProducts.latest.image ? (
+                {latest.image ? (
                   <img
-                    src={featuredProducts.latest.image}
-                    alt={featuredProducts.latest.name}
+                  alt={latest.name}
+                  src={latest.image}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -194,9 +173,9 @@ export default function Home() {
                 </span>
               </div>
               <div className="p-6">
-                <h5 className="text-xl font-semibold mb-3">{featuredProducts.latest.name}</h5>
-                <p className="text-gray-600 mb-4">{featuredProducts.latest.description}</p>
-                <div className="text-2xl font-bold text-blue-600 mb-4">${featuredProducts.latest.price}</div>
+                <h5 className="text-xl font-semibold mb-3">{latest.name}</h5>
+                <p className="text-gray-600 mb-4">{latest.description}</p>
+                <div className="text-2xl font-bold text-blue-600 mb-4">${latest.selling_price.toFixed(2)}</div>
                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center">
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293A1 1 0 005 16h16M16 16a2 2 0 11-4 0 2 2 0 014 0zM8 16a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -209,10 +188,10 @@ export default function Home() {
             {/* Sale Product */}
             <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-64 bg-gray-100 flex items-center justify-center">
-                {featuredProducts.onSale.image ? (
+                {onSale.image ? (
                   <img
-                    src={featuredProducts.onSale.image}
-                    alt={featuredProducts.onSale.name}
+                    src={onSale.image}
+                    alt={onSale.name}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -225,9 +204,9 @@ export default function Home() {
                 </span>
               </div>
               <div className="p-6">
-                <h5 className="text-xl font-semibold mb-3">{featuredProducts.onSale.name}</h5>
-                <p className="text-gray-600 mb-4">{featuredProducts.onSale.description}</p>
-                <div className="text-2xl font-bold text-blue-600 mb-4">${featuredProducts.onSale.price}</div>
+                <h5 className="text-xl font-semibold mb-3">{onSale.name}</h5>
+                <p className="text-gray-600 mb-4">{onSale.description}</p>
+                <div className="text-2xl font-bold text-blue-600 mb-4">${onSale.selling_price.toFixed(2)}</div>
                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center">
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293A1 1 0 005 16h16M16 16a2 2 0 11-4 0 2 2 0 014 0zM8 16a2 2 0 11-4 0 2 2 0 014 0z" />
