@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,6 +21,7 @@ export default function Navbar({ cartCount = 0 }) {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const supabase = createClient();
+  const categoriesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -39,6 +40,19 @@ export default function Navbar({ cartCount = 0 }) {
 
     fetchCategories();
   }, [supabase]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (categoriesRef.current && !categoriesRef.current.contains(event.target as Node)) {
+        setIsCategoriesOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-black shadow z-50">
@@ -61,7 +75,7 @@ export default function Navbar({ cartCount = 0 }) {
           <Link href="/" className="hover:text-blue-500 text-white">Home</Link>
 
           {/* Categories Dropdown */}
-          <div className="relative">
+          <div ref={categoriesRef} className="relative">
             <button
               onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
               className="hover:text-blue-500 flex items-center text-white"
