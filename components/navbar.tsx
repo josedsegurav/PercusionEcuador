@@ -5,16 +5,21 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faDrum, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import Image from "next/image";
 
+interface Category {
+  id: number;
+  name: string;
+}
+
 export default function Navbar({ cartCount = 0 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const supabase = createClient();
 
   useEffect(() => {
@@ -61,7 +66,7 @@ export default function Navbar({ cartCount = 0 }) {
               onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
               className="hover:text-blue-500 flex items-center text-white"
             >
-              Categories <i className="fas fa-chevron-down ml-1 text-xs"></i>
+              Categories <FontAwesomeIcon icon={faChevronDown} className="ml-1 text-xs" />
             </button>
             {isCategoriesOpen && (
               <ul className="absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg">
@@ -71,7 +76,7 @@ export default function Navbar({ cartCount = 0 }) {
                       href={`/categories/${category.id}`}
                       className="block px-4 py-2 hover:bg-gray-100"
                     >
-                      <i className="fas fa-drum mr-2"></i>
+                      <FontAwesomeIcon icon={faDrum} className="mr-2" />
                       {category.name}
                     </Link>
                   </li>
@@ -81,16 +86,16 @@ export default function Navbar({ cartCount = 0 }) {
           </div>
 
           <Link href="/products" className="hover:text-blue-500 text-white">Products</Link>
-          <a href="/#nosotros" className="hover:text-blue-500 text-white">About Us</a>
-          <a href="/#contacto" className="hover:text-blue-500 text-white">Contact</a>
+          <Link href="/#nosotros" className="hover:text-blue-500 text-white">About Us</Link>
+          <Link href="/#contacto" className="hover:text-blue-500 text-white">Contact</Link>
           <Link href="/orders" className="hover:text-blue-500 text-white">Orders</Link>
         </div>
 
         {/* Right Section */}
         <div className="hidden md:flex items-center space-x-4">
-          <a href="#" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
+          <Link href="#" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
             <FontAwesomeIcon icon={faUser} className="mr-1" /> Sign In
-          </a>
+          </Link>
 
           <Link href="/cart" className="relative">
             <FontAwesomeIcon icon={faShoppingCart} className="text-white" />
@@ -101,14 +106,14 @@ export default function Navbar({ cartCount = 0 }) {
             )}
           </Link>
 
-          <a
+          <Link
             href="https://wa.me/593996888655"
+            className="flex items-center justify-center w-9 h-9 bg-green-500 text-white rounded-full hover:bg-green-600 transition"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center w-9 h-9 bg-green-500 text-white rounded-full hover:bg-green-600 transition"
           >
             <FontAwesomeIcon icon={faWhatsapp} className="text-white" />
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -122,7 +127,7 @@ export default function Navbar({ cartCount = 0 }) {
                 className="w-full text-left hover:text-blue-500 flex items-center justify-between"
                 onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
               >
-                Categories <i className="fas fa-chevron-down text-xs"></i>
+                Categories <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
               </button>
               {isCategoriesOpen && (
                 <ul className="mt-2 space-y-1 pl-4">
@@ -132,7 +137,7 @@ export default function Navbar({ cartCount = 0 }) {
                         href={`/categories/${category.id}`}
                         className="block hover:text-blue-500"
                       >
-                        <i className="fas fa-drum mr-2"></i>
+                        <FontAwesomeIcon icon={faDrum} className="mr-2" />
                         {category.name}
                       </Link>
                     </li>
@@ -141,8 +146,8 @@ export default function Navbar({ cartCount = 0 }) {
               )}
             </li>
             <li><Link href="/products" className="block hover:text-blue-500">Products</Link></li>
-            <li><a href="/#nosotros" className="block hover:text-blue-500">About Us</a></li>
-            <li><a href="/#contacto" className="block hover:text-blue-500">Contact</a></li>
+            <li><Link href="/#nosotros" className="block hover:text-blue-500">About Us</Link></li>
+            <li><Link href="/#contacto" className="block hover:text-blue-500">Contact</Link></li>
             <li><Link href="/orders" className="block hover:text-blue-500">Orders</Link></li>
           </ul>
         </div>
