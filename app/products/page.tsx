@@ -5,21 +5,10 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBox, faCartPlus, faEnvelope, faEye, faInfoCircle, faStore, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faBox, faCartPlus, faDrum, faEnvelope, faEye, faInfoCircle, faStore, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { Product } from "@/app/utils/types";
 
-// Mock data types (replace with your fetched data)
-interface Product {
-    id: number;
-    name: string;
-    description: string;
-    selling_price: number;
-    stock_quantity: number;
-    image?: string;
-    categories?: { id: number; name: string };
-    vendors?: { id: number; name: string };
-    created_at: string;
-}
 
 interface Category {
     id: number;
@@ -108,7 +97,7 @@ export default function Products() {
     return (
         <div>
             {/* Page Header */}
-            <section className="bg-gradient-to-r from-sky-600 to-sky-400 py-24 mt-20">
+            <section className="bg-gradient-to-r from-sky-600 to-sky-400 py-24">
                 <div className="container mx-auto px-4 flex flex-col lg:flex-row justify-between items-center">
                     <div className="text-white lg:w-2/3">
                         <nav className="mb-3 text-sm">
@@ -207,7 +196,7 @@ export default function Products() {
                                             />
                                         ) : (
                                             <div className="flex items-center justify-center h-full text-sky-500 opacity-40">
-                                                <i className="fas fa-drum text-6xl"></i>
+                                                <FontAwesomeIcon icon={faDrum} className="text-6xl" />
                                             </div>
                                         )}
 
@@ -229,7 +218,7 @@ export default function Products() {
                                         {/* Quick Actions */}
                                         <div className="absolute top-3 right-3">
                                             <Link
-                                                href={`/products/${product.id}`}
+                                                href={`/products/${product.name.replace(" ", "-")}-${product.id}`}
                                                 className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow hover:bg-gray-100"
                                             >
                                                 <FontAwesomeIcon icon={faEye} />
@@ -243,7 +232,7 @@ export default function Products() {
                                         </span>
                                         <h5 className="text-lg font-semibold mb-2">
                                             <Link
-                                                href={`/products/${product.id}`}
+                                                href={`/products/${product.name.replace(/ /g, '-')}-${product.id}`}
                                                 className="hover:text-sky-600"
                                             >
                                                 {product.name}
@@ -296,7 +285,7 @@ export default function Products() {
                                                     <FontAwesomeIcon icon={faWhatsapp} />
                                                 </a>
                                                 <Link
-                                                    href={`/products/${product.id}`}
+                                                    href={`/products/${product.name.replace(/ /g, '-')}-${product.id}`}
                                                     className="border border-sky-500 text-sky-600 py-2 rounded-lg text-sm flex items-center justify-center hover:bg-sky-50"
                                                 >
                                                     <FontAwesomeIcon icon={faInfoCircle} />Details
