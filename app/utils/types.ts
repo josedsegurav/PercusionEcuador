@@ -9,3 +9,8 @@ export interface Product {
     vendors?: { id: number; name: string };
     created_at: string;
 }
+
+export interface Category {
+    id: number;
+    name: string;
+}
