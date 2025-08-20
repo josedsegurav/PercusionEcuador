@@ -3,11 +3,17 @@ import Link from "next/link"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faClock, faDrum, faEye, faHome, faStar, faTag } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
+import Header from "@/components/header";
+import QuickContact from "@/components/quickContact";
 
 type OrderItem = {
     id: number
+}
+
+type Vendor = {
+    id: number
+    name: string
 }
 
 type Product = {
@@ -16,6 +22,7 @@ type Product = {
     image?: string
     selling_price: number
     order_items: OrderItem[]
+    vendors: Vendor[]
 }
 
 type Category = {
@@ -36,9 +43,8 @@ interface CategoriesPageProps {
 export default async function CategoriesPage({
 
 
-    categoryCount,
-    productCategoriesCount,
-    vendorCategoriesCount,
+
+
 }: CategoriesPageProps) {
     const supabase = await createClient();
 
@@ -54,43 +60,32 @@ export default async function CategoriesPage({
         return <div>Error: {error.message}</div>;
     }
 
+    const { data: vendorsData, error: vendorsError } = await supabase
+        .from("vendors")
+        .select("id, name");
+    if (vendorsError) {
+        return <div>Error: {vendorsError.message}</div>;
+    }
+
     const categories: Category[] = categoriesData as unknown as Category[];
+    const vendors: Vendor[] = vendorsData as unknown as Vendor[];
 
     const popularCategories: Category[] = categories.sort((a, b) => b.products.length - a.products.length).slice(0, 4);
     // const popularCategories: Category[] = categories.sort((a, b) => b.products.order_items.length - a.products.order_items.length).slice(0, 4);
 
-
-
+    const categoryCount = categories.length;
+    const productCategoriesCount = categories.reduce((acc, category) => acc + category.products.length, 0);
+    const vendorCategoriesCount = vendors.length;
     return (
         <div>
             {/* Encabezado */}
-            <section className="flex items-center bg-gradient-to-r from-cyan-700 to-sky-500 py-28 mt-20">
-                <div className="container mx-auto px-6 grid md:grid-cols-2 gap-6 items-center">
-                    <div>
-                        <nav className="mb-3 text-sm">
-                            <ol className="flex gap-2 text-white/80">
-                                <li>
-                                    <Link href="/" className="hover:underline">
-                                        <FontAwesomeIcon icon={faHome} /> Inicio
-                                    </Link>
-                                </li>
-                                <li className="text-white">Categorías</li>
-                            </ol>
-                        </nav>
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-                            Nuestras Categorías
-                        </h1>
-                        <p className="text-white/80 text-lg">
-                            Explora nuestra amplia selección de instrumentos de percusión
-                            organizados por categoría
-                        </p>
-                    </div>
-                    <div className="text-right text-white">
-                        <span className="text-4xl font-bold block">{categoryCount}</span>
-                        <small className="opacity-75 text-base">Categorías disponibles</small>
-                    </div>
-                </div>
-            </section>
+            <Header
+                currentPage="Categorías"
+                title="Nuestras Categorías"
+                description="Explora nuestra amplia selección de instrumentos de percusión organizados por categoría"
+                count={categoryCount}
+                countDescription="Categorías disponibles"
+            />
 
             {/* Lista de categorías */}
             <section className="py-12 container mx-auto px-6">
@@ -178,7 +173,7 @@ export default async function CategoriesPage({
                                     <div className="mt-auto space-y-2">
                                         <Link
                                             href={`/products?category_id=${category.id}`}
-                                            className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg text-center inline-block"
+                                            className="bg-percussion hover:bg-cyan-700 text-white px-4 py-2 rounded-lg text-center inline-block"
                                         >
                                             <FontAwesomeIcon icon={faEye} /> Ver productos
                                         </Link>
@@ -300,32 +295,7 @@ export default async function CategoriesPage({
             )}
 
             {/* Contacto rápido */}
-            <section className="bg-cyan-600 text-white py-12">
-                <div className="container mx-auto px-6 grid md:grid-cols-2 items-center">
-                    <div>
-                        <h3 className="text-2xl font-bold mb-2">¿Necesitas ayuda eligiendo?</h3>
-                        <p className="text-lg">
-                            Nuestros expertos pueden ayudarte a encontrar el instrumento
-                            perfecto para tu nivel y estilo musical.
-                        </p>
-                    </div>
-                    <div className="flex gap-3 mt-6 md:mt-0 justify-end">
-                        <Link
-                            href="https://wa.me/593996888655"
-                            target="_blank"
-                            className="bg-white text-cyan-600 font-semibold px-6 py-2 rounded-full hover:bg-gray-100"
-                        >
-                            <FontAwesomeIcon icon={faWhatsapp} /> WhatsApp
-                        </Link>
-                        <Link
-                            href="mailto:info@percusionecuador.com"
-                            className="border border-white px-6 py-2 rounded-full hover:bg-white hover:text-cyan-600 font-semibold"
-                        >
-                            <FontAwesomeIcon icon={faEnvelope} /> Email
-                        </Link>
-                    </div>
-                </div>
-            </section>
+            <QuickContact />
         </div>
     )
 }

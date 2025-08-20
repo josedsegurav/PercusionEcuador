@@ -1,11 +1,12 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faShoppingBag } from "@fortawesome/free-solid-svg-icons";
-import { faFacebook, faInstagram, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { faShoppingBag, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faDrum } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import ProductCard from "@/components/productCard";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -21,7 +22,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-percussion text-white py-20 lg:py-32" id="inicio">
+      <section className="bg-gradient-to-r from-cyan-900 to-percussion text-white py-20 lg:py-32" id="inicio">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -47,7 +48,7 @@ export default async function Home() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="#productos"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-300 flex items-center justify-center"
+                  className="bg-percussion hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-300 flex items-center justify-center"
                 >
                   <FontAwesomeIcon icon={faShoppingBag} className="w-5 h-5 mr-2" />
                   Ver Productos
@@ -93,23 +94,18 @@ export default async function Home() {
                   </a>
                 </h4>
                 <p className="text-gray-600 mb-6">{category.description}</p>
-                <a href={`/categorias/${category.id}`} className="text-blue-600 font-semibold hover:text-blue-700 transition-colors duration-300 inline-flex items-center">
-                  Explorar productos
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
+
               </div>
             ))}
           </div>
 
           <div className="text-center mt-12">
-            <a href="/categorias" className="bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center">
+            <Link href="/categories" className="bg-transparent border-2 border-percussion text-percussion hover:bg-percussion hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center">
               Ver Todas las Categorías
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -124,107 +120,19 @@ export default async function Home() {
 
           <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
             {/* Bestseller Product */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-64 bg-gray-100 flex items-center justify-center">
-                {bestseller.image ? (
-                  <Image
-                    src={bestseller.image}
-                    alt={bestseller.name}
-                    className="w-full h-full object-cover"
-                    width={500}
-                    height={500}
-                  />
-                ) : (
-                  <svg className="w-16 h-16 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
-                )}
-                <span className="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  Más Vendido
-                </span>
-              </div>
-              <div className="p-6">
-                <h5 className="text-xl font-semibold mb-3">{bestseller.name}</h5>
-                <p className="text-gray-600 mb-4">{bestseller.description}</p>
-                <div className="text-2xl font-bold text-blue-600 mb-4">${bestseller.selling_price.toFixed(2)}</div>
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293A1 1 0 005 16h16M16 16a2 2 0 11-4 0 2 2 0 014 0zM8 16a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  Agregar al Carrito
-                </button>
-              </div>
-            </div>
+            <ProductCard product={bestseller} badge="top" />
 
             {/* Latest Product */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-64 bg-gray-100 flex items-center justify-center">
-                {latest.image ? (
-                  <Image
-                  alt={latest.name}
-                  src={latest.image}
-                    className="w-full h-full object-cover"
-                    width={500}
-                    height={500}
-                  />
-                ) : (
-                  <svg className="w-16 h-16 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
-                )}
-                <span className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  Nuevo
-                </span>
-              </div>
-              <div className="p-6">
-                <h5 className="text-xl font-semibold mb-3">{latest.name}</h5>
-                <p className="text-gray-600 mb-4">{latest.description}</p>
-                <div className="text-2xl font-bold text-blue-600 mb-4">${latest.selling_price.toFixed(2)}</div>
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293A1 1 0 005 16h16M16 16a2 2 0 11-4 0 2 2 0 014 0zM8 16a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  Agregar al Carrito
-                </button>
-              </div>
-            </div>
+            <ProductCard product={latest} badge="latest" />
+
+
 
             {/* Sale Product */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="relative h-64 bg-gray-100 flex items-center justify-center">
-                {onSale.image ? (
-                  <Image
-                    src={onSale.image}
-                    alt={onSale.name}
-                    className="w-full h-full object-cover"
-                    width={500}
-                    height={500}
-                  />
-                ) : (
-                  <svg className="w-16 h-16 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
-                )}
-                <span className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  Oferta
-                </span>
-              </div>
-              <div className="p-6">
-                <h5 className="text-xl font-semibold mb-3">{onSale.name}</h5>
-                <p className="text-gray-600 mb-4">{onSale.description}</p>
-                <div className="text-2xl font-bold text-blue-600 mb-4">${onSale.selling_price.toFixed(2)}</div>
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293A1 1 0 005 16h16M16 16a2 2 0 11-4 0 2 2 0 014 0zM8 16a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  Agregar al Carrito
-                </button>
-              </div>
-            </div>
+            <ProductCard product={onSale} badge="sale" />
           </div>
 
           <div className="text-center mt-12">
-            <Link href="/products" className="bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center">
+            <Link href="/products" className="bg-transparent border-2 border-percussion text-percussion hover:bg-percussion hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center">
               Ver Todos los Productos
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -250,20 +158,6 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="flex justify-center space-x-6 mt-10">
-              <Link href="https://wa.me/593996888655" className="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center text-white transition-colors duration-300" target="_blank">
-              <FontAwesomeIcon icon={faWhatsapp} />
-            </Link>
-            <Link href="https://www.facebook.com/percusionecuador" className="w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center text-white transition-colors duration-300" target="_blank">
-              <FontAwesomeIcon icon={faFacebook} />
-            </Link>
-            <Link href="https://www.instagram.com/percusion_ec/" className="w-12 h-12 bg-pink-600 hover:bg-pink-700 rounded-full flex items-center justify-center text-white transition-colors duration-300" target="_blank">
-              <FontAwesomeIcon icon={faInstagram} />
-            </Link>
-            <Link href="mailto:info@percusionecuador.com" className="w-12 h-12 bg-gray-600 hover:bg-gray-700 rounded-full flex items-center justify-center text-white transition-colors duration-300" target="_blank">
-              <FontAwesomeIcon icon={faEnvelope} />
-            </Link>
-          </div>
         </div>
       </section>
 

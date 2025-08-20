@@ -135,7 +135,7 @@ export default function Navbar({ cartCount = 0 }) {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <ul className="flex flex-col p-4 space-y-2">
-            <li><Link href="/" className="block hover:text-blue-500">Home</Link></li>
+            <li><Link href="/" className="block hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
             <li>
               <button
                 className="w-full text-left hover:text-blue-500 flex items-center justify-between"
@@ -159,10 +159,10 @@ export default function Navbar({ cartCount = 0 }) {
                 </ul>
               )}
             </li>
-            <li><Link href="/products" className="block hover:text-blue-500">Products</Link></li>
-            <li><Link href="/#nosotros" className="block hover:text-blue-500">About Us</Link></li>
-            <li><Link href="/#contacto" className="block hover:text-blue-500">Contact</Link></li>
-            <li><Link href="/orders" className="block hover:text-blue-500">Orders</Link></li>
+            <li><Link href="/products" className="block hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Products</Link></li>
+            <li><Link href="/#nosotros" className="block hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>About Us</Link></li>
+            <li><Link href="/#contacto" className="block hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>
+            <li><Link href="/orders" className="block hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Orders</Link></li>
           </ul>
         </div>
       )}
