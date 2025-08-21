@@ -6,19 +6,8 @@ import useCartStore from '@/store/cartStore';
 import CartContainer from '@/components/cartContainer';
 import Link from 'next/link';
 
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  image?: string;
-}
 
-interface CartPageProps {
-  cartItems?: CartItem[];
-}
-
-const CartPage: React.FC<CartPageProps> = () => {
+export default function CartPage() {
     const items = useCartStore((state) => state.cart);
   return (
     <div>
@@ -110,5 +99,3 @@ const CartPage: React.FC<CartPageProps> = () => {
     </div>
   );
 };
-
-export default CartPage;

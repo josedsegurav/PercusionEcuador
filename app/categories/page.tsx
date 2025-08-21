@@ -32,20 +32,9 @@ type Category = {
     products: Product[]
 }
 
-interface CategoriesPageProps {
-    categories: Category[]
-    popularCategories?: Category[]
-    categoryCount: number
-    productCategoriesCount: number
-    vendorCategoriesCount: number
-}
-
-export default async function CategoriesPage({
 
 
-
-
-}: CategoriesPageProps) {
+export default async function CategoriesPage() {
     const supabase = await createClient();
 
     const { data: categoriesData, error } = await supabase
