@@ -109,12 +109,10 @@ export default async function CategoriesPage({
                                 {/* Contenido categoría */}
                                 <div className="p-4 flex flex-col flex-1">
                                     <h4 className="font-bold text-lg mb-2">
-                                        <Link
-                                            href={`/products?category_id=${category.id}`}
-                                            className="hover:underline"
-                                        >
+                                        <p>
                                             {category.name}
-                                        </Link>
+                                        </p>
+
                                     </h4>
                                     <p className="text-gray-600 mb-4 text-sm">
                                         {category.description
@@ -171,12 +169,7 @@ export default async function CategoriesPage({
 
                                     {/* Botones */}
                                     <div className="mt-auto space-y-2">
-                                        <Link
-                                            href={`/products?category_id=${category.id}`}
-                                            className="bg-percussion hover:bg-cyan-700 text-white px-4 py-2 rounded-lg text-center inline-block"
-                                        >
-                                            <FontAwesomeIcon icon={faEye} /> Ver productos
-                                        </Link>
+
                                         <div className="grid grid-cols-2 gap-2">
                                             <Link
                                                 href={`https://wa.me/593996888655?text=Hola, me interesan los productos de la categoría: ${category.name}`}
@@ -223,6 +216,13 @@ export default async function CategoriesPage({
                     </div>
                 )}
             </section>
+
+            <div className="text-center mt-6 mb-12">
+                <Link href="/products" className="bg-transparent border-2 border-percussion text-percussion hover:bg-percussion hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center">
+                    Ver Todos los Productos
+                    <FontAwesomeIcon icon={faArrowRight} className="w-5 h-5 ml-2" />
+                </Link>
+            </div>
 
             {/* Estadísticas */}
             {categories.length > 0 && (

@@ -6,11 +6,21 @@ import { faEye, faBox, faStore, faCartPlus, faTimes, faInfoCircle } from "@forta
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faDrum } from "@fortawesome/free-solid-svg-icons";
 import { Product } from "@/app/utils/types";
+import useCartStore from "@/store/cartStore";
 
 export default function ProductCard({ product, badge }: { product: Product, badge: string }) {
-    const handleAddToCart = (productId: number) => {
-        console.log(productId);
+    const { addToCart } = useCartStore();
 
+    const handleAddToCart = () => {
+        addToCart({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            stock: product.stock_quantity,
+            image: product.image || '',
+            selling_price: product.selling_price,
+            quantity: 1,
+        });
     }
     return (
 
@@ -106,7 +116,7 @@ export default function ProductCard({ product, badge }: { product: Product, badg
                 <div className="space-y-2">
                     {product.stock_quantity > 0 ? (
                         <button
-                            onClick={() => handleAddToCart(product.id)}
+                            onClick={() => handleAddToCart()}
                             className="w-full bg-sky-600 hover:bg-sky-700 text-white py-2 rounded-lg">
                             <FontAwesomeIcon icon={faCartPlus} />Add to Cart
                         </button>
