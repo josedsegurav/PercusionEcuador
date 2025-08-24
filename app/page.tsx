@@ -13,6 +13,7 @@ export default async function Home() {
   const { data: categories } = await supabase.from("categories").select("*");
   const { data: products } = await supabase.from("products").select("*");
 
+
   const productCount = products?.length || 0;
   const bestseller = products?.find((product) => product.stock_quantity < 10)
   const latest = products?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
@@ -122,8 +123,6 @@ export default async function Home() {
 
             {/* Latest Product */}
             <ProductCard product={latest} badge="latest" />
-
-
 
             {/* Sale Product */}
             <ProductCard product={onSale} badge="sale" />

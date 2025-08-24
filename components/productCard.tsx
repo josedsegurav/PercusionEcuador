@@ -7,9 +7,12 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faDrum } from "@fortawesome/free-solid-svg-icons";
 import { Product } from "@/app/utils/types";
 import useCartStore from "@/store/cartStore";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function ProductCard({ product, badge }: { product: Product, badge: string }) {
     const { addToCart } = useCartStore();
+    const router = useRouter();
 
     const handleAddToCart = () => {
         addToCart({
@@ -21,12 +24,25 @@ export default function ProductCard({ product, badge }: { product: Product, badg
             selling_price: product.selling_price,
             quantity: 1,
         });
+
+        toast(
+            "Producto agregado al carrito",
+            {
+                description: "El producto ha sido agregado al carrito",
+                action: {
+                    label: "Ver carrito",
+                    onClick: () => {
+                        router.push("/cart");
+                    }
+                }
+            }
+        )
     }
     return (
 
         <div
             key={product.id}
-            className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
+            className="rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
         >
             <div className="relative h-64 bg-gray-100">
                 {product.image ? (
@@ -70,7 +86,7 @@ export default function ProductCard({ product, badge }: { product: Product, badg
                 <div className="absolute top-3 right-3">
                     <Link
                         href={`/products/${product.name.replace(" ", "-")}-${product.id}`}
-                        className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow hover:bg-gray-100"
+                        className="w-10 h-10 flex items-center justify-center rounded-full shadow hover:bg-gray-100"
                     >
                         <FontAwesomeIcon icon={faEye} />
                     </Link>
@@ -130,13 +146,13 @@ export default function ProductCard({ product, badge }: { product: Product, badg
                     )}
 
                     <div className="grid grid-cols-2 gap-2">
-                        <a
+                        <Link
                             href={`https://wa.me/593996888655?text=Hola, me interesa el producto: ${product.name}`}
                             target="_blank"
                             className="border border-green-500 text-green-600 py-2 rounded-lg text-sm flex items-center justify-center hover:bg-green-50"
                         >
                             <FontAwesomeIcon icon={faWhatsapp} />
-                        </a>
+                        </Link>
                         <Link
                             href={`/products/${product.name.replace(/ /g, '-')}-${product.id}`}
                             className="border border-sky-500 text-sky-600 py-2 rounded-lg text-sm flex items-center justify-center hover:bg-sky-50"

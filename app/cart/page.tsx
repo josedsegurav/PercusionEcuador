@@ -32,7 +32,7 @@ export default function CartPage() {
             </nav>
             <h1 className="text-4xl font-bold mb-3 relative">
               Tu Carrito
-              <div className="absolute bottom-0 left-0 w-16 h-1 bg-blue-600 mt-2"></div>
+              <div className="absolute bottom-0 left-0 w-16 h-1 bg-blue-600 mt-2 text-black"></div>
             </h1>
             <p className="text-gray-600 text-xl">
               Revisa tus items seleccionados
@@ -42,7 +42,7 @@ export default function CartPage() {
       </section>
 
       {/* Cart Content Section */}
-      <section className="bg-white py-16">
+      <section className="py-16">
         <div className="container mx-auto px-4" id="cart">
           {/* Cart items would be rendered here */}
           {items.length === 0 ? (
@@ -59,7 +59,9 @@ export default function CartPage() {
       </section>
 
       {/* Trust Badges Section */}
-      <section className="bg-gray-50 py-10">
+      <section className="
+
+      py-10">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             <div className="trust-badge">

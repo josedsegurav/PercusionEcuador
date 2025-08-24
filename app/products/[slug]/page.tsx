@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import { faCheckCircle, faDrum, faEnvelope, faStore, faTag, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faDrum, faEnvelope, faStore, faTag, faTimesCircle } from "@fortawesome/free-solid-svg-icons";import useCartStore from "@/store/cartStore";
 
 
 export default async function ProductPage({ params, }: { params: Promise<{ slug: string }> }) {
@@ -17,6 +17,7 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
     const slug = slugArray.join('-');
 
     const supabase = await createClient();
+
 
     const { data: productData, error } = await supabase.from('products').select(`
     id,

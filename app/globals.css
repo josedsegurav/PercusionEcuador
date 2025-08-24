@@ -2,6 +2,8 @@
 
 @theme {
   --color-percussion: #0D8DC8;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
 }
 
 @layer base {
