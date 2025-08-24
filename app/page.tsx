@@ -49,14 +49,14 @@ export default async function Home() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="#productos"
-                  className="bg-percussion hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-300 flex items-center justify-center"
+                  className="bg-percussion hover:bg-cyan-400 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-300 flex items-center justify-center"
                 >
                   <FontAwesomeIcon icon={faShoppingBag} className="w-5 h-5 mr-2" />
                   Ver Productos
                 </a>
                 <a
                   href="https://wa.me/593996888655"
-                  className="border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 flex items-center justify-center"
+                  className="border-2 border-percussion text-white hover:bg-percussion hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 flex items-center justify-center"
                 >
                   <FontAwesomeIcon icon={faWhatsapp} className="w-5 h-5 mr-2" />
                   Mensaje WhatsApp

@@ -83,6 +83,7 @@ export default async function CategoriesPage() {
                         {categories.map((category) => (
                             <div
                                 key={category.id}
+                                id={category.name.toLowerCase().replace(/ /g, "-")}
                                 className="border rounded-2xl shadow-md overflow-hidden flex flex-col"
                             >
                                 {/* Encabezado categoría */}

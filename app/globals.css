@@ -4,6 +4,14 @@
   --color-percussion: #0D8DC8;
   --color-white: #FFFFFF;
   --color-black: #000000;
+  --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+  @keyframes ping {
+    75%, 100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
 }
 
 @layer base {
