@@ -58,7 +58,7 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
     }
 
     return (
-        <div className="pt-20">
+        <div className="pt-20 bg-white">
             {/* Breadcrumb */}
             <section className="bg-gray-100 py-3">
                 <div className="max-w-6xl mx-auto px-4">

@@ -77,7 +77,7 @@ export default async function CategoriesPage() {
             />
 
             {/* Lista de categorías */}
-            <section className="py-12 container mx-auto px-6">
+            <section className="py-12 container mx-auto px-6 bg-white">
                 {categories.length > 0 ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {categories.map((category) => (

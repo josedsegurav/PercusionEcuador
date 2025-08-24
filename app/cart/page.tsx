@@ -30,7 +30,7 @@ export default function CartPage() {
                 </li>
               </ol>
             </nav>
-            <h1 className="text-4xl font-bold mb-3 relative">
+            <h1 className="text-4xl font-bold mb-3 relative text-black">
               Tu Carrito
               <div className="absolute bottom-0 left-0 w-16 h-1 bg-blue-600 mt-2 text-black"></div>
             </h1>
@@ -42,7 +42,7 @@ export default function CartPage() {
       </section>
 
       {/* Cart Content Section */}
-      <section className="py-16">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4" id="cart">
           {/* Cart items would be rendered here */}
           {items.length === 0 ? (
@@ -59,9 +59,7 @@ export default function CartPage() {
       </section>
 
       {/* Trust Badges Section */}
-      <section className="
-
-      py-10">
+      <section className="py-10 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             <div className="trust-badge">
