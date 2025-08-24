@@ -42,7 +42,7 @@ export default function ProductCard({ product, badge }: { product: Product, badg
 
         <div
             key={product.id}
-            className="rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
+            className="rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col bg-white"
         >
             <div className="relative h-64 bg-gray-100">
                 {product.image ? (
