@@ -4,10 +4,12 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartPlus, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import useCartStore from "@/store/cartStore";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function QuantitySet({ initialQuantity, product }: { initialQuantity: number, product: Product }) {
     const { addToCart } = useCartStore();
-
+    const router = useRouter();
     const [quantity, setQuantity] = useState(initialQuantity);
     const decreaseQuantity = () => {
         if (quantity > 1) setQuantity(quantity - 1);
@@ -27,6 +29,19 @@ export default function QuantitySet({ initialQuantity, product }: { initialQuant
             selling_price: product.selling_price,
             quantity: quantity,
         });
+
+        toast(
+            "Producto agregado al carrito",
+            {
+                description: "El producto ha sido agregado al carrito",
+                action: {
+                    label: "Ver carrito",
+                    onClick: () => {
+                        router.push("/cart");
+                    }
+                }
+            }
+        )
     }
         return (
             <div>

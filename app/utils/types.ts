@@ -4,7 +4,9 @@ export interface Product {
     description: string;
     selling_price: number;
     stock_quantity: number;
-    image?: string;
+    bucket_id: string;
+    image_name: string;
+    image: string;
     categories?: { id: number; name: string };
     vendors?: { id: number; name: string };
     created_at: string;

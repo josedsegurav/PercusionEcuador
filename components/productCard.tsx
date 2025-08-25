@@ -14,6 +14,7 @@ export default function ProductCard({ product, badge }: { product: Product, badg
     const { addToCart } = useCartStore();
     const router = useRouter();
 
+
     const handleAddToCart = () => {
         addToCart({
             id: product.id,
@@ -45,13 +46,14 @@ export default function ProductCard({ product, badge }: { product: Product, badg
             className="rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col bg-white"
         >
             <div className="relative h-64 bg-gray-100">
-                {product.image ? (
+                {product.image_name ? (
                     <Image
                         src={product.image}
                         alt={product.name}
                         fill
                         className="object-cover"
                     />
+
                 ) : (
                     <div className="flex items-center justify-center h-full text-sky-500 opacity-40">
                         <FontAwesomeIcon icon={faDrum} className="text-6xl" />

@@ -21,19 +21,30 @@ export default async function Products() {
                 stock_quantity,
                 categories (id, name),
                 vendors (id, name),
-                created_at
+                created_at,
+                bucket_id,
+                image_name
                 `);
     if (error) {
         return <div>Error: {error.message}</div>;
     }
+
 
     const { data: categoriesData, error: categoriesError } = await supabase.from("categories").select("*");
     if (categoriesError) {
         return <div>Error: {categoriesError.message}</div>;
     }
 
-    const products: Product[] = productsData as unknown as Product[];
+    const productsArray: Product[] = productsData as unknown as Product[];
     const categories: Category[] = categoriesData as unknown as Category[];
+
+    const products = productsArray.map(product => {
+        const productImage = product.image_name ? supabase.storage.from(product.bucket_id).getPublicUrl(product.image_name) : null;
+        return {
+            ...product,
+            image: productImage?.data.publicUrl || ''
+        };
+    });
 
     console.log(products);
 

@@ -27,14 +27,22 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
     stock_quantity,
     categories (id, name),
     vendors (id, name),
-    created_at
+    created_at,
+    bucket_id,
+    image_name
   `).eq('id', id).single();
 
     if (error) {
         return notFound();
     }
 
-    const product: Product = productData as unknown as Product;
+    const productImage = supabase.storage.from(productData.bucket_id).getPublicUrl(productData.image_name);
+    console.log(productImage.data.publicUrl);
+
+    const product: Product = {
+        ...productData as unknown as Product,
+        image: productImage.data.publicUrl
+    };
 
     const { data: relatedProductsData, error: relatedProductsError } = await supabase.from('products').select(`
     id,
@@ -44,14 +52,25 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
     stock_quantity,
     categories (id, name),
     vendors (id, name),
-    created_at
+    created_at,
+    bucket_id,
+    image_name
     `).eq('category_id', product.categories?.id).neq('id', id).limit(4);
 
     if (relatedProductsError) {
         return notFound();
     }
 
-    const relatedProducts: Product[] = relatedProductsData as unknown as Product[];
+    const relatedProductsArray: Product[] = relatedProductsData as unknown as Product[];
+
+    const relatedProducts = relatedProductsArray.map(rp => {
+        const productImage = rp.image_name ? supabase.storage.from(rp.bucket_id).getPublicUrl(rp.image_name) : null;
+        return {
+            ...rp,
+            image: productImage?.data.publicUrl || ''
+        };
+    });
+
 
     if (slug !== product.name.replaceAll(" ", "-")) {
         redirect(`${product.name.replaceAll(" ", "-")}-${product.id}`);
@@ -93,10 +112,10 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
                 <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 px-4">
                     {/* Product Image */}
                     <div>
-                        {product?.image ? (
+                        {product?.image_name ? (
                             <div className="relative h-[500px] bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden">
                                 <Image
-                                    src={product?.image}
+                                    src={product.image}
                                     alt={product?.name}
                                     id="mainProductImage"
                                     className="w-full h-full object-contain cursor-zoom-in"
@@ -218,7 +237,7 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
                             {relatedProducts.slice(0, 4).map((rp) => (
                                 <div key={rp.id} className="border rounded-lg shadow-sm overflow-hidden">
                                     <div className="h-48 bg-gray-100 flex items-center justify-center">
-                                        {rp.image ? (
+                                        {rp.image_name ? (
                                             <Image src={rp.image} alt={rp.name} className="w-full h-full object-cover" width={500} height={500} />
                                         ) : (
                                             <FontAwesomeIcon icon={faDrum} />

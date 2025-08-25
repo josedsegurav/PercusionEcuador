@@ -43,8 +43,8 @@ const Cart = ({ items }: { items: Item[] }) => {
     };
 
     const getTaxAmount = () => {
-        // Ecuador IVA is typically 12%
-        const taxRate = 0.12;
+
+        const taxRate = 0.15;
         return subTotal * taxRate;
     };
 
