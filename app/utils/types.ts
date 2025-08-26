@@ -16,3 +16,20 @@ export interface Category {
     id: number;
     name: string;
 }
+
+export interface User {
+    id: number;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    role?: string;
+}
+
+export interface HeaderType {
+    currentPage: string,
+    title: string,
+    description: string,
+    count: number | React.ReactNode,
+    countDescription: string
+}

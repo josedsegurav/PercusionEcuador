@@ -8,6 +8,8 @@ config.autoAddCss = false
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
+
+import { createClient } from "@/lib/supabase/server";
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -24,11 +26,18 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  const loggedIn = user ? true : false;
+  const { data: userData } = await supabase.from("users").select("*").single();
+  const userId = userData?.first_name || "";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased, text-black`}>
@@ -38,7 +47,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
+          <Navbar loggedIn={loggedIn} userId={userId} />
           {children}
           <Footer />
           <Toaster />

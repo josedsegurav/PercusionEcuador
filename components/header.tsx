@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { HeaderType } from "@/app/utils/types";
 
 export default function Header({
     currentPage,
@@ -8,13 +9,9 @@ export default function Header({
     description,
     count,
     countDescription
-    }: {
-    currentPage: string,
-    title: string,
-    description: string,
-    count: number,
-    countDescription: string
-}) {
+}: HeaderType) {
+
+
     return (
 
 

@@ -10,8 +10,9 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import Image from "next/image";
 import useCartStore from "@/store/cartStore";
+import { LogoutButton } from "./logout-button";
 
-export default function Navbar() {
+export default function Navbar({ loggedIn, userId }: { loggedIn: boolean, userId: string }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cart } = useCartStore();
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -33,7 +34,7 @@ export default function Navbar() {
 
         {/* Mobile Menu buttons */}
         <div className="md:hidden flex items-center space-x-4">
-          <Link href="#" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
+          <Link href="/account" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
             <FontAwesomeIcon icon={faUser} className="mr-1" /> Sign In
           </Link>
 
@@ -62,9 +63,18 @@ export default function Navbar() {
 
         {/* Desktop Menu buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link href="#" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
-            <FontAwesomeIcon icon={faUser} className="mr-1" /> Sign In
-          </Link>
+          {loggedIn ? (
+            <>
+            <Link href="/account" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
+              <FontAwesomeIcon icon={faUser} className="mr-1" /> {userId}
+            </Link>
+            <LogoutButton />
+            </>
+          ) : (
+            <Link href="/auth/login" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
+              <FontAwesomeIcon icon={faUser} className="mr-1" /> Sign In
+            </Link>
+          )}
 
           <Link href="/cart" className="relative">
             <FontAwesomeIcon icon={faShoppingCart} className="text-white text-2xl" />

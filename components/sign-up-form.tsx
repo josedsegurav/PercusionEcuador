@@ -48,6 +48,10 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
+      const { error: error2 } = await supabase.from("users").insert({
+        email: email,
+      });
+      if (error2) throw error2;
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
