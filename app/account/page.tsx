@@ -13,7 +13,7 @@ export default async function Account() {
     const { data: userData } = await supabase.from("users").select("*").eq("email", user?.user?.email).single() as { data: User };
 
     const completeProfile = () => {
-        if (userData.first_name && userData.last_name) {
+        if (userData.first_name && userData.last_name && userData.email && userData.phone) {
             return true;
         } else {
             return false;
@@ -34,10 +34,10 @@ export default async function Account() {
                 countDescription="Perfil Completado"
             />
 
-            <div className="max-w-4xl mx-auto px-4 py-8">
+            <div className="flex items-center justify-center px-4 py-8">
                 {completeProfile() ? (
                     /* User Profile Display */
-                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div className="rounded-lg shadow-lg overflow-hidden">
                         {/* Profile Header */}
                         <div className="bg-gradient-to-r from-percussion to-percussion/50 px-8 py-6">
                             <div className="flex items-center justify-between">
@@ -63,7 +63,7 @@ export default async function Account() {
                     </div>
                 ) : (
                     /* Complete Profile Form */
-                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div className="rounded-lg shadow-lg overflow-hidden">
                         <div className="bg-gradient-to-r from-orange-500 to-red-500 px-8 py-6">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">

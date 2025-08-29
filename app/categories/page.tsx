@@ -59,7 +59,7 @@ export default async function CategoriesPage() {
     const categories: Category[] = categoriesData as unknown as Category[];
     const vendors: Vendor[] = vendorsData as unknown as Vendor[];
 
-    const popularCategories: Category[] = categories.sort((a, b) => b.products.length - a.products.length).slice(0, 4);
+    // const popularCategories: Category[] = categories.sort((a, b) => b.products.length - a.products.length).slice(0, 4);
     // const popularCategories: Category[] = categories.sort((a, b) => b.products.order_items.length - a.products.order_items.length).slice(0, 4);
 
     const categoryCount = categories.length;
@@ -77,7 +77,7 @@ export default async function CategoriesPage() {
             />
 
             {/* Lista de categorías */}
-            <section className="py-12 container mx-auto px-6 bg-white">
+            <section className="py-12 container mx-auto px-6">
                 {categories.length > 0 ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {categories.map((category) => (
@@ -170,7 +170,7 @@ export default async function CategoriesPage() {
                                             </Link>
                                             {category.products.length > 0 ? (
                                                 <Link
-                                                    href={`/products/${category.products[0].id}`}
+                                                    href={`/products/${category.products[0].name.replace(" ", "-")}-${category.products[0].id}`}
                                                     className="border border-cyan-600 text-cyan-600 hover:bg-cyan-600 hover:text-white px-2 py-1 rounded text-sm text-center"
                                                 >
                                                     <FontAwesomeIcon icon={faStar} /> Destacado
@@ -245,7 +245,7 @@ export default async function CategoriesPage() {
             )}
 
             {/* Categorías populares */}
-            {popularCategories.length > 0 && (
+            {/* {popularCategories.length > 0 && (
                 <section className="py-12 container mx-auto px-6">
                     <h3 className="text-center text-2xl font-bold mb-8">
                         Categorías Populares
@@ -282,7 +282,7 @@ export default async function CategoriesPage() {
                         ))}
                     </div>
                 </section>
-            )}
+            )} */}
 
             {/* Contacto rápido */}
             <QuickContact />

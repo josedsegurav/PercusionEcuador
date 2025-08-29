@@ -36,13 +36,26 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
         return notFound();
     }
 
-    const productImage = supabase.storage.from(productData.bucket_id).getPublicUrl(productData.image_name);
-    console.log(productImage.data.publicUrl);
+    let product;
 
-    const product: Product = {
-        ...productData as unknown as Product,
-        image: productImage.data.publicUrl
-    };
+    if (productData.image_name == null) {
+        product = {
+            ...productData as unknown as Product,
+
+        };
+
+    } else {
+        const productImage = supabase.storage.from(productData.bucket_id).getPublicUrl(productData.image_name);
+
+        product = {
+            ...productData as unknown as Product,
+            image: productImage.data.publicUrl
+        };
+    }
+
+
+
+
 
     const { data: relatedProductsData, error: relatedProductsError } = await supabase.from('products').select(`
     id,

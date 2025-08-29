@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCheck, faCreditCard, faDrum, faEnvelope, faMoneyBillWave, faPlus, faShippingFast, faShoppingCart, faSpinner, faStickyNote, faTruck, faUniversity } from "@fortawesome/free-solid-svg-icons";
@@ -8,12 +9,13 @@ import useCartStore from "@/store/cartStore";
 import Image from "next/image";
 import { Item } from "@/store/cartStore";
 import Link from "next/link";
+import { User } from "@/app/utils/types";
 
-const Cart = ({ items }: { items: Item[] }) => {
+const CartContainer = ({ items, userData }: { items: Item[], userData: User }) => {
     const { updateQuantity: updateQuantityStore, removeFromCart, clearCart: clearCartStore, getTotal } = useCartStore();
     const [cartItems, setCartItems] = useState(items);
     const [subTotal, setSubTotal] = useState(getTotal());
-    const [customerName, setCustomerName] = useState('');
+    const [customerName, setCustomerName] = useState(userData ? userData.first_name + ' ' + userData.last_name : '');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [shippingAddress, setShippingAddress] = useState('');
@@ -25,12 +27,11 @@ const Cart = ({ items }: { items: Item[] }) => {
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    console.log(cartItems);
-
     useEffect(() => {
         setCartItems(items);
+        console.log(items);
     }, [items]);
-
+    console.log(customerName);
     const getShippingCost = () => {
         switch (shippingOption) {
             case 'express':
@@ -177,14 +178,14 @@ ${notes ? `*Notes:* ${notes}` : ''}
     const getCsrfToken = () => {
         return document.querySelector("meta[name='csrf-token']")?.getAttribute("content") || '';
     };
-    console.log("Rendering Cart component with items:", cartItems);
+
     return (
         cartItems.length !== 0 ? (
             <div className="container mx-auto px-4 py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Cart Items Section */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div className="rounded-lg shadow-sm border border-gray-200">
                             <div className="bg-white border-b border-gray-200 px-6 py-4 rounded-t-lg">
                                 <h4 className="text-xl font-semibold text-gray-900 mb-0">Artículos del Carrito ({items.length})</h4>
                             </div>
@@ -258,7 +259,7 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                     </div>
                                 ))}
                             </div>
-                            <div className="bg-white border-t border-gray-200 p-6 rounded-b-lg">
+                            <div className="border-t border-gray-200 p-6 rounded-b-lg">
                                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                                     <Link href="/products" className="inline-flex items-center px-4 py-2 border border-blue-300 rounded text-blue-600 hover:bg-blue-50">
                                         <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
@@ -279,7 +280,7 @@ ${notes ? `*Notes:* ${notes}` : ''}
 
                     {/* Order Summary Section */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-24">
+                        <div className="rounded-lg shadow-sm border border-gray-200 sticky top-24">
                             <div className="bg-blue-600 text-white px-6 py-4 rounded-t-lg">
                                 <h4 className="text-xl font-semibold mb-0">Resumen del Pedido</h4>
                             </div>
@@ -311,33 +312,32 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                         <h5 className="text-lg font-semibold mb-3 text-blue-600 flex items-center">
                                             <i className="fas fa-user mr-2"></i>Información del Cliente
                                         </h5>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            <div>
-                                                <label htmlFor="customerName" className="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo *</label>
-                                                <input
-                                                    type="text"
-                                                    id="customerName"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                    placeholder="Tu nombre completo"
-                                                    value={customerName}
-                                                    onChange={(e) => setCustomerName(e.target.value)}
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico *</label>
-                                                <input
-                                                    type="email"
-                                                    id="email"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                    placeholder="tu@correo.com"
-                                                    value={email}
-                                                    onChange={(e) => setEmail(e.target.value)}
-                                                    required
-                                                />
-                                                <div className="text-xs text-gray-500 mt-1">La confirmación se enviará aquí</div>
-                                            </div>
+                                        <div className="mt-3">
+                                            <label htmlFor="customerName" className="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo *</label>
+                                            <input
+                                                type="text"
+                                                id="customerName"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="Tu nombre completo"
+                                                defaultValue={userData ? userData.first_name + ' ' + userData.last_name : ''}
+                                                onChange={(e) => setCustomerName(e.target.value)}
+                                                required
+                                            />
                                         </div>
+                                        <div className="mt-3">
+                                            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico *</label>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="tu@correo.com"
+                                                defaultValue={userData ? userData.email : ''}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                required
+                                            />
+                                            <div className="text-xs text-gray-500 mt-1">La confirmación se enviará aquí</div>
+                                        </div>
+
                                         <div className="mt-3">
                                             <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-1">Número de Teléfono *</label>
                                             <input
@@ -345,7 +345,7 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                 id="phone"
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 placeholder="+593 999 999 999"
-                                                value={phone}
+                                                defaultValue={userData ? userData.phone : ''}
                                                 onChange={(e) => setPhone(e.target.value)}
                                                 required
                                             />
@@ -637,5 +637,5 @@ ${notes ? `*Notes:* ${notes}` : ''}
     );
 };
 
-export default Cart;
+export default CartContainer;
 

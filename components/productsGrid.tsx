@@ -56,7 +56,7 @@ export default function ProductsGrid({
 
 
             {/* Filters & Search */}
-            <section className="py-6 container mx-auto px-6 bg-white">
+            <section className="py-6 container mx-auto px-6">
                 <div className="container mx-auto px-4 flex flex-col lg:flex-row justify-between gap-4">
                     {/* Search */}
                     <input
@@ -102,7 +102,7 @@ export default function ProductsGrid({
             </section>
 
             {/* Products Grid */}
-            <section className="py-12 bg-white">
+            <section className="py-12">
 
                     <div className="container mx-auto px-4">
                         {filteredProducts.length > 0 ? (

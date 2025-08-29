@@ -1,14 +1,32 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { faAward, faHeadphones, faShield, faTruck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useCartStore from '@/store/cartStore';
 import CartContainer from '@/components/cartContainer';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import { User } from '@/app/utils/types';
 
 
 export default function CartPage() {
-    const items = useCartStore((state) => state.cart);
+
+  const supabase = createClient();
+  const [userId, setUserId] = useState<string | null>(null);
+  const { cart } = useCartStore(userId);
+  const [userData, setUserData] = useState<User>();
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: user } = await supabase.auth.getUser();
+      setUserId(user?.user?.id || null);
+      const { data: userData } = await supabase.from('users').select('*');
+      setUserData(userData?.[0] as User);
+    }
+    getUserId();
+  }, [supabase]);
+
+
   return (
     <div>
       {/* Cart Header Section */}
@@ -45,14 +63,14 @@ export default function CartPage() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4" id="cart">
           {/* Cart items would be rendered here */}
-          {items.length === 0 ? (
+          {cart.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-600 text-lg">Tu carrito está vacío</p>
             </div>
           ) : (
             <div>
               {/* Cart items rendering logic would go here */}
-              <CartContainer items={items} />
+              <CartContainer items={cart} userData={userData as User} />
             </div>
           )}
         </div>
