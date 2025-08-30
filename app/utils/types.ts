@@ -34,3 +34,9 @@ export interface HeaderType {
     count: number | React.ReactNode,
     countDescription: string
 }
+
+export interface adminCard {
+    id: number,
+    tab_title: string,
+    tab_description: string
+}

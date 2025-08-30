@@ -6,14 +6,22 @@ import Header from "@/components/header";
 import QuickContact from "@/components/quickContact";
 import ProfileForm from "@/components/profileForm";
 import EditAccount from "@/components/editAccount";
+import Link from "next/link";
 
 export default async function Account() {
     const supabase = await createClient();
     const { data: user } = await supabase.auth.getUser();
     const { data: userData } = await supabase.from("users").select("*").eq("email", user?.user?.email).single() as { data: User };
 
+    console.log(userData)
+    if(userData == null){
+        const { error: error } = await supabase.from("users").insert({email: user?.user?.email});
+        console.log(error)
+    }
+
+
     const completeProfile = () => {
-        if (userData.first_name && userData.last_name && userData.email && userData.phone) {
+        if (userData?.first_name && userData?.last_name && userData.email && userData.phone) {
             return true;
         } else {
             return false;
@@ -60,6 +68,7 @@ export default async function Account() {
                         </div>
 
                         <EditAccount userData={userData} />
+                        {userData.role == "admin" ? <Link href="/admin">Admin Dashboard</Link> : ''}
                     </div>
                 ) : (
                     /* Complete Profile Form */
