@@ -11,12 +11,10 @@ export default function ProfileForm({ userData }: { userData: User }) {
     const [formData, setFormData] = useState<{
         first_name: string,
         last_name: string,
-        email: string,
         phone: string
     }>({
         first_name: userData?.first_name || '',
         last_name: userData?.last_name || '',
-        email: userData?.email || '',
         phone: userData?.phone || ''
     });
 
@@ -28,7 +26,6 @@ export default function ProfileForm({ userData }: { userData: User }) {
         setFormData((prev: {
             first_name: string,
             last_name: string,
-            email: string,
             phone: string
         }) => ({
             ...prev,
@@ -36,7 +33,6 @@ export default function ProfileForm({ userData }: { userData: User }) {
         }));
     };
 
-    console.log(formData);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -87,21 +83,6 @@ export default function ProfileForm({ userData }: { userData: User }) {
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                             placeholder="Ingresa tu apellido"
                             required
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="tu.email@ejemplo.com"
                         />
                     </div>
 

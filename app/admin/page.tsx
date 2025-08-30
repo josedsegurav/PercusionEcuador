@@ -21,10 +21,10 @@ interface Params {
 }
 
 
-const AdminDashboard = async ({ searchParams }: { searchParams: Params }) => {
+const AdminDashboard = async ({ searchParams }: { searchParams: Promise<Params> }) => {
+    const params = await searchParams;
+    const activeTab = params?.tab || 'categories';
     const supabase = await createClient();
-    const activeTab = searchParams?.tab || 'categories';
-
     const { data: categories } = await supabase.from("categories").select('*');
     const { data: products } = await supabase.from("products").select("*");
     const { data: orders } = await supabase.from("orders").select("*");
@@ -195,7 +195,7 @@ const AdminDashboard = async ({ searchParams }: { searchParams: Params }) => {
 
                     {/* Tab Content Area */}
                     <div className="p-6">
-                        <AdminItemTab items={await getTabData(activeTab)} type={activeTab} />
+                        <AdminItemTab items={getTabData(activeTab)} type={activeTab} />
 
                     </div>
                 </div>

@@ -8,10 +8,14 @@ import ProfileForm from "@/components/profileForm";
 import EditAccount from "@/components/editAccount";
 import Link from "next/link";
 
+
 export default async function Account() {
+
     const supabase = await createClient();
     const { data: user } = await supabase.auth.getUser();
-    const { data: userData } = await supabase.from("users").select("*").eq("email", user?.user?.email).single() as { data: User };
+    const { data: userData, error: error } = await supabase.from("users").select("*").eq("email", user?.user?.email).single() as { data: User };
+
+    console.log(error)
 
     console.log(userData)
     if(userData == null){
