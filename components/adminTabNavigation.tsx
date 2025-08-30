@@ -25,7 +25,7 @@ const AdminTabNavigation = ({ tabs, activeTab } : { tabs: Array<Tab>, activeTab:
 
     return (
         <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+            <nav className="flex flex-wrap justify-evenly md:justify-center" aria-label="Tabs">
                 {tabs.map((tab: Tab ) => (
                     <button
                         key={tab.id}
