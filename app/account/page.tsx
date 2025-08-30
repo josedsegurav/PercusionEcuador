@@ -13,7 +13,7 @@ export default async function Account() {
 
     const supabase = await createClient();
     const { data: user } = await supabase.auth.getUser();
-    const { data: userData, error: error } = await supabase.from("users").select("*").eq("email", user?.user?.email).single() as { data: User };
+    const { data: userData, error: error } = await supabase.from("users").select("*").eq("email", user?.user?.email).single() as unknown as { data: User, error: object };
 
     console.log(error)
 
