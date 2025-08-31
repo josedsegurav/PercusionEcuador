@@ -45,7 +45,7 @@ export default function ProductCardAdmin({ product } : {product: adminCard}) {
                 {/* Quick Actions Section */}
                 <QuickActions
                     id={product.id}
-                    type="product"
+                    type="products"
                     color="green"
                 />
             </div>

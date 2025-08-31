@@ -8,11 +8,11 @@ export default function QuickActions({ id, type, color } : {id: number, type: st
     const router = useRouter();
 
     const handleView = () => {
-        router.push(`/admin/${type}s/${id}`);
+        router.push(`/admin/${type}/${id}`);
     };
 
     const handleEdit = () => {
-        router.push(`/admin/${type}s/${id}/edit`);
+        router.push(`/admin/${type}/${id}/edit`);
     };
 
     return (
@@ -34,7 +34,7 @@ export default function QuickActions({ id, type, color } : {id: number, type: st
                     {/* Edit Button */}
                     <button
                         onClick={handleEdit}
-                        className={`inline-flex items-center px-3 py-2 bg-${color}-600 hover:bg-${color}-700 text-white rounded-lg transition-colors text-sm font-medium`}
+                        className={`inline-flex items-center px-3 py-2 bg-${color}-500 hover:bg-${color}-700 text-white rounded-lg transition-colors text-sm font-medium`}
                     >
                         <FontAwesomeIcon icon={faEdit} className="text-xs mr-2" />
                         Editar

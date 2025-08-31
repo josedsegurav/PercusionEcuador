@@ -45,7 +45,7 @@ export default function UserCard({ user }: { user: adminCard }) {
                 {/* Quick Actions Section */}
                 <QuickActions
                     id={user.id}
-                    type="user"
+                    type="users"
                     color="orange"
                 />
             </div>

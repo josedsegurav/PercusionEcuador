@@ -45,7 +45,7 @@ export default function OrderCard({ order } : { order: adminCard})  {
                 {/* Quick Actions Section */}
                 <QuickActions
                     id={order.id}
-                    type="order"
+                    type="orders"
                     color="purple"
                 />
             </div>

@@ -46,7 +46,7 @@ export default function CategoryCard ({ category } : { category: adminCard}) {
                 {/* Quick Actions Section */}
                 <QuickActions
                     id={category.id}
-                    type="category"
+                    type="categories"
                     color="blue"
                 />
             </div>
