@@ -4,15 +4,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import Image from "next/image";
 import useCartStore from "@/store/cartStore";
-import { LogoutButton } from "./logout-button";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@/app/utils/types";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const supabase = createClient();
@@ -20,14 +20,15 @@ export default function Navbar() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [userId, setUserId] = useState<User | null>(null);
   const { getCartCount } = useCartStore();
+  const router = useRouter();
 
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setLoggedIn(session ? true : false);
 
-        if (session?.user?.email) {
+        if (session) {
           const { data: { user } } = await supabase.auth.getUser();
 
           const { data: userData } = await supabase.from("users").select("*")
@@ -39,8 +40,14 @@ export default function Navbar() {
       }
     );
 
-    return () => subscription.unsubscribe();
-  }, [supabase]);
+  }, []);
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    console.log("logout");
+    router.push("/auth/login");
+
+  };
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-black shadow z-50">
@@ -65,9 +72,9 @@ export default function Navbar() {
               <FontAwesomeIcon icon={faUser} className="mr-1" /> {userId?.first_name}
             </Link>
           ) : (
-          <Link href="/auth/login" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
-            <FontAwesomeIcon icon={faUser} className="mr-1" /> Sign In
-          </Link>
+            <Link href="/auth/login" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
+              <FontAwesomeIcon icon={faUser} className="mr-1" /> Sign In
+            </Link>
           )}
           <Link href="/cart" className="relative text-2xl">
             <FontAwesomeIcon icon={faShoppingCart} className="text-white" />
@@ -96,10 +103,12 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-4">
           {loggedIn ? (
             <>
-            <Link href="/account" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
-              <FontAwesomeIcon icon={faUser} className="mr-1" /> {userId?.first_name}
-            </Link>
-            <LogoutButton />
+              <Link href="/account" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
+                <FontAwesomeIcon icon={faUser} className="mr-1" /> {userId?.first_name}
+              </Link>
+              <button className="bg-percussion cursor-pointer text-white border border-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition" onClick={logout}>
+                <FontAwesomeIcon icon={faSignOut} className="mr-1" />Logout
+              </button>
             </>
           ) : (
             <Link href="/auth/login" className="bg-percussion text-white border border-blue-500 text-blue-500 px-4 py-1 rounded hover:bg-white hover:text-percussion transition">
@@ -111,8 +120,8 @@ export default function Navbar() {
             <FontAwesomeIcon icon={faShoppingCart} className="text-white text-2xl" />
             {getCartCount() > 0 && (
               <span className="absolute -top-2 -right-2 bg-percussion text-white text-xs px-1 rounded-full">
-              {getCartCount()}
-            </span>
+                {getCartCount()}
+              </span>
             )}
           </Link>
 
