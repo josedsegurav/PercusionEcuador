@@ -28,8 +28,10 @@ export default function Navbar() {
         setLoggedIn(session ? true : false);
 
         if (session?.user?.email) {
+          const { data: { user } } = await supabase.auth.getUser();
+
           const { data: userData } = await supabase.from("users").select("*")
-            .eq("email", session.user.email).single() as { data: User };
+            .eq("email", user?.email).single() as { data: User };
           setUserId(userData);
         } else {
           setUserId(null);
