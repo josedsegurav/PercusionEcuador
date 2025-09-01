@@ -51,6 +51,7 @@ export default function ProductCard({ product, badge }: { product: Product, badg
                         src={product.image}
                         alt={product.name}
                         fill
+                        sizes="10"
                         className="object-cover"
                     />
 

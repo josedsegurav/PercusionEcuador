@@ -12,16 +12,18 @@ import { User } from '@/app/utils/types';
 export default function CartPage() {
 
   const supabase = createClient();
-  const [userId, setUserId] = useState<string | null>(null);
-  const { cart } = useCartStore(userId);
+  const { cart } = useCartStore();
   const [userData, setUserData] = useState<User>();
 
   useEffect(() => {
     const getUserId = async () => {
-      const { data: user } = await supabase.auth.getUser();
-      setUserId(user?.user?.id || null);
-      const { data: userData } = await supabase.from('users').select('*');
-      setUserData(userData?.[0] as User);
+      const { data: userData, error: error } = await supabase.from('users').select('*');
+      if(userData){
+        setUserData(userData[0] as unknown as User);
+      } else if (error){
+        console.log(error)
+      }
+
     }
     getUserId();
   }, [supabase]);

@@ -11,8 +11,16 @@ import ProductCard from "@/components/productCard";
 export default async function Home() {
   const supabase = await createClient();
   const { data: categories } = await supabase.from("categories").select("*");
-  const { data: products } = await supabase.from("products").select("*");
+  const { data: productsData } = await supabase.from("products").select("*");
 
+  const productsArray= productsData;
+  const products = productsArray?.map(product => {
+    const productImage = product.image_name ? supabase.storage.from(product.bucket_id).getPublicUrl(product.image_name) : null;
+    return {
+        ...product,
+        image: productImage?.data.publicUrl || ''
+    };
+});
 
   const productCount = products?.length || 0;
   const bestseller = products?.find((product) => product.stock_quantity < 10)
@@ -66,7 +74,7 @@ export default async function Home() {
 
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/20">
               <div className="w-50 h-50 rounded-full flex items-center justify-center mx-auto mb-6 bg-white">
-                <Image src="/perc.png" alt="Drum" width={160} height={160} />
+                <Image src="/perc.png" alt="Drum" width={160} height={160} className="w-45 h-auto" />
               </div>
               <h3 className="text-2xl font-semibold mb-4">Productos Premium</h3>
               <p className="text-gray-200">Importamos de marcas internacionales reconocidas.</p>

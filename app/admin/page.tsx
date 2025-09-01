@@ -26,7 +26,10 @@ const AdminDashboard = async ({ searchParams }: { searchParams: Promise<Params> 
 
     const { data: loggedUser } = await supabase.auth.getUser();
     const { data: userData, error: error } = await supabase.from("users").select("*").eq("email", loggedUser?.user?.email).single() as unknown as { data: User, error: object };
-    console.log(error)
+
+    if(error){
+        console.log("Error", error);
+    }
 
     if(userData.role != 'admin'){
         return (

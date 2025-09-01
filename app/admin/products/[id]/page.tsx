@@ -45,7 +45,7 @@ export default async function ProductViewPage({ params, }: { params: Promise<{ i
                 `).eq("id", id).single();
 
     const productImage = productData?.image_name ? supabase.storage.from(productData.bucket_id).getPublicUrl(productData.image_name) : null;
-console.log(productImage)
+
     const product = {
         id: productData?.id || 0,
         name: productData?.name || '',

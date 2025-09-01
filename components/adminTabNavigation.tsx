@@ -4,7 +4,6 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-
 interface Tab {
     id: string,
     label: string,
@@ -13,7 +12,7 @@ interface Tab {
     color: string
 }
 
-const AdminTabNavigation = ({ tabs, activeTab } : { tabs: Array<Tab>, activeTab: string}) => {
+const AdminTabNavigation = ({ tabs, activeTab }: { tabs: Array<Tab>, activeTab: string }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -26,7 +25,8 @@ const AdminTabNavigation = ({ tabs, activeTab } : { tabs: Array<Tab>, activeTab:
     return (
         <div className="border-b border-gray-200">
             <nav className="flex flex-wrap justify-evenly md:justify-center" aria-label="Tabs">
-                {tabs.map((tab: Tab ) => (
+                {tabs.map((tab: Tab) => (
+
                     <button
                         key={tab.id}
                         onClick={() => handleTabChange(tab.id)}

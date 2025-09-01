@@ -13,12 +13,12 @@ import { useRouter } from 'next/navigation';
 import { Category } from '@/app/utils/types';
 import { createClient } from '@/lib/supabase/client';
 
-export default function CategoryEditForm({ category }: { category: Category }) {
+export default function CategoryEditForm({ category, form }: { category: Category | null, form: string }) {
     const router = useRouter();
     const supabase = createClient();
     const [formData, setFormData] = useState({
-        name: category.name || '',
-        description: category.description || ''
+        name: category ? category.name : '',
+        description: category ? category.description : ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -29,38 +29,56 @@ export default function CategoryEditForm({ category }: { category: Category }) {
             [name]: value
         }));
     };
-    console.log(category.id)
-    console.log(formData.name)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Replace with your actual API call
-        const { error } = await supabase.from("categories").update({
-            name: formData.name,
-            description: formData.description
-        }).eq("id", category.id)
+        if(category && form == "edit"){
+            const { error } = await supabase.from("categories").update({
+                name: formData.name,
+                description: formData.description
+            }).eq("id", category.id)
 
-        if (error) {
-            console.log(error)
-        } else {
-            setIsSubmitting(false);
-            // Redirect back to view page
-            router.push(`/admin/categories/${category.id}`);
-            router.refresh(); // Refresh the server component
+            if (error) {
+                console.log(error)
+            } else {
+                setIsSubmitting(false);
+                // Redirect back to view page
+                router.push(`/admin/categories/${category.id}`);
+                router.refresh(); // Refresh the server component
+            }
+        } else if(form == "add"){
+            const { error } = await supabase.from("categories").insert({
+                name: formData.name,
+                description: formData.description
+            })
 
+            if (error) {
+                console.log(error)
+            } else {
+                setIsSubmitting(false);
+                // Redirect back to view page
+                router.push('/admin/categories/?tab=categories');
+                router.refresh(); // Refresh the server component
+            }
         }
+
     };
 
     const handleCancel = () => {
-        router.push(`/admin/categories/${category.id}`);
+        if(category && form == 'edit'){
+            router.push(`/admin/categories/${category.id}`);
+        } else if (form == 'add'){
+            router.push('/admin/categories/?tab=categories');
+        }
+
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
             {/* Non-editable ID Display */}
-            <div className="bg-gray-100 rounded-lg p-6 border-l-4 border-gray-400">
+            {category ? (<div className="bg-gray-100 rounded-lg p-6 border-l-4 border-gray-400">
                 <div className="flex items-center space-x-3 mb-3">
                     <div className="w-10 h-10 bg-gray-400 rounded-lg flex items-center justify-center">
                         <FontAwesomeIcon
@@ -80,7 +98,8 @@ export default function CategoryEditForm({ category }: { category: Category }) {
                         El ID no puede ser modificado
                     </p>
                 </div>
-            </div>
+            </div>) : ''}
+
 
             {/* Name Field */}
             <div className="bg-blue-50 rounded-lg p-6 border-l-4 border-blue-500">

@@ -17,7 +17,6 @@ export default async function Account() {
 
     console.log(error)
 
-    console.log(userData)
     if(userData == null){
         const { error: error } = await supabase.from("users").insert({email: user?.user?.email});
         console.log(error)

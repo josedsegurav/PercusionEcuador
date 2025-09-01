@@ -19,132 +19,72 @@ interface CartState {
     clearCart: () => void;
     getTotal: () => number;
     getCartCount: () => number;
-    migrateCart: (fromKey: string, toKey: string) => void;
+    getItemCount: () => number;
 }
 
-// Create a factory function to generate cart stores with different persistence keys
-const createCartStore = (storageKey: string) => create(
+const useCartStore = create<CartState>()(
     persist(
-        (set, get: () => CartState) => ({
+        (set, get) => ({
             cart: [],
-            addToCart: (item: Item) => set((state: CartState) => {
-                const existingItem = state.cart.find((i: Item) => i.id === item.id);
+
+            addToCart: (item: Item) => set((state) => {
+                const existingItem = state.cart.find((i) => i.id === item.id);
                 if (existingItem) {
+                    const newQuantity = existingItem.quantity + item.quantity;
+                    if (newQuantity > item.stock) {
+                        // Don't exceed stock limit
+                        return state;
+                    }
                     return {
-                        cart: state.cart.map((i: Item) =>
-                            i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+                        cart: state.cart.map((i) =>
+                            i.id === item.id ? { ...i, quantity: newQuantity } : i
                         )
                     };
                 } else {
                     return { cart: [...state.cart, item] };
                 }
             }),
-            updateQuantity: (item: Item, quantity: number) => set((state: CartState) => ({
-                cart: state.cart.map((i: Item) => i.id === item.id ? { ...i, quantity } : i)
-            })),
-            removeFromCart: (item: Item) => set((state: CartState) => ({
-                cart: state.cart.filter((i: Item) => i.id !== item.id)
-            })),
-            clearCart: () => set({ cart: [] }),
-            getTotal: () => get().cart.reduce((acc: number, item: Item) => acc + item.selling_price * item.quantity, 0),
-            getCartCount: () => get().cart.length,
-            migrateCart: (fromKey: string, toKey: string) => {
-                // Get cart data from old storage key
-                const oldCartData = localStorage.getItem(fromKey);
-                if (oldCartData) {
-                    try {
-                        const parsedData = JSON.parse(oldCartData);
-                        const oldCart = parsedData.state?.cart || [];
 
-                        // Merge with current cart
-                        const currentCart = get().cart;
-                        const mergedCart = [...currentCart];
-
-                        oldCart.forEach((oldItem: Item) => {
-                            const existingIndex = mergedCart.findIndex(item => item.id === oldItem.id);
-                            if (existingIndex >= 0) {
-                                // Add quantities if item exists
-                                mergedCart[existingIndex].quantity += oldItem.quantity;
-                            } else {
-                                // Add new item
-                                mergedCart.push(oldItem);
-                            }
-                        });
-
-                        // Update current cart
-                        set({ cart: mergedCart });
-
-                        // Remove old cart data
-                        localStorage.removeItem(fromKey);
-                    } catch (error) {
-                        console.error('Error migrating cart:', error);
-                    }
+            updateQuantity: (item: Item, quantity: number) => set((state) => {
+                if (quantity <= 0) {
+                    return {
+                        cart: state.cart.filter((i) => i.id !== item.id)
+                    };
                 }
-            }
+                if (quantity > item.stock) {
+                    return state; // Don't exceed stock
+                }
+                return {
+                    cart: state.cart.map((i) => i.id === item.id ? { ...i, quantity } : i)
+                };
+            }),
+
+            removeFromCart: (item: Item) => set((state) => ({
+                cart: state.cart.filter((i) => i.id !== item.id)
+            })),
+
+            clearCart: () => set({ cart: [] }),
+
+            getTotal: () => {
+                const state = get();
+                return state.cart.reduce((acc, item) => acc + item.selling_price * item.quantity, 0);
+            },
+
+            getCartCount: () => {
+                const state = get();
+                return state.cart.length;
+            },
+
+            getItemCount: () => {
+                const state = get();
+                return state.cart.reduce((acc, item) => acc + item.quantity, 0);
+            },
         }),
         {
-            name: storageKey,
+            name: 'cart-storage', // Storage key for persistence
+            partialize: (state) => ({ cart: state.cart }), // Only persist cart data
         }
     )
 );
-
-// Create stores for different scenarios
-const guestCartStore = createCartStore("guest-cart");
-const createUserCartStore = (userId: string) => createCartStore(`user-cart-${userId}`);
-
-// Main hook that manages which store to use
-let currentStore: ReturnType<typeof createCartStore> | null = null;
-let currentUserId: string | null = null;
-
-const useCartStore = (userId?: string | null): CartState => {
-    const isLoggedIn = Boolean(userId);
-    const userIdString = userId?.toString();
-
-    // Determine if we need to switch stores
-    const shouldSwitchStore = currentUserId !== userIdString;
-
-    if (shouldSwitchStore) {
-        const oldStore = currentStore;
-        const oldUserId = currentUserId;
-
-        // Create new store based on login status
-        if (isLoggedIn && userIdString) {
-            currentStore = createUserCartStore(userIdString);
-            currentUserId = userIdString;
-        } else {
-            currentStore = guestCartStore;
-            currentUserId = null;
-        }
-
-        // Migrate cart from guest to user or vice versa
-        if (oldStore && currentStore) {
-            const oldStorageKey = isLoggedIn
-                ? "guest-cart"  // Moving from guest to user
-                : `user-cart-${oldUserId}`; // Moving from user to guest
-
-            const newStorageKey = isLoggedIn
-                ? `user-cart-${userIdString}`
-                : "guest-cart";
-
-            // Only migrate if moving from guest to user (not the reverse)
-            if (isLoggedIn && !oldUserId) {
-                currentStore.getState().migrateCart(oldStorageKey, newStorageKey);
-            }
-        }
-    }
-
-    // Initialize store if it doesn't exist
-    if (!currentStore) {
-        if (isLoggedIn && userIdString) {
-            currentStore = createUserCartStore(userIdString);
-            currentUserId = userIdString;
-        } else {
-            currentStore = guestCartStore;
-            currentUserId = null;
-        }
-    }
-
-    return currentStore();
-};
 
 export default useCartStore;

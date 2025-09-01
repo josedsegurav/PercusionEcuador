@@ -4,6 +4,7 @@ import {
     faBoxOpen, faPlus,
     faSearch,
     faChartLine,
+    faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import CategoryCard from './categoryCard';
 import ProductCardAdmin from './productCardAdmin';
@@ -11,13 +12,14 @@ import OrderCard from './orderCard';
 import UserCard from './userCard';
 import { adminCard, tabData } from '@/app/utils/types';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function AdminItemTab({ items, type, activeTabData }: { items: Array<adminCard>, type: string, activeTabData: tabData }) {
     const [filters, setFilters] = useState<{ search: string | null }>({ search: null });
     const [itemsList, setItemsList] = useState<adminCard[]>();
     const [ filteredItems, setFilteredItems ] = useState<adminCard[]>();
-
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
     useEffect(() => {
         setItemsList(items)
         setFilteredItems(items)
@@ -27,7 +29,6 @@ export default function AdminItemTab({ items, type, activeTabData }: { items: Ar
         const { name, value } = e.target;
         const newFilters = { ...filters, [name]: value };
         setFilters(newFilters);
-        console.log(newFilters)
 
         let result = itemsList;
 
@@ -35,9 +36,13 @@ export default function AdminItemTab({ items, type, activeTabData }: { items: Ar
             result = result?.filter((item) => item.tab_title.toLowerCase().includes(newFilters.search?.toLowerCase() ?? ""));
         }
 
-        console.log(result)
 
         setFilteredItems(result);
+    }
+
+    const handleAdd = () => {
+        setIsLoading(true);
+        router.push(`/admin/${activeTabData.id}/add`);
     }
 
     const renderCard = (item: adminCard) => {
@@ -117,10 +122,10 @@ export default function AdminItemTab({ items, type, activeTabData }: { items: Ar
                         </button> */}
 
                         {/* Add New Button */}
-                        <Link href={`/admin/${activeTabData.id}/add`} className={`px-4 py-2 bg-${activeTabData?.color}-500 hover:bg-${activeTabData?.color}-700 text-white rounded-lg transition-colors flex items-center space-x-2 font-medium`}>
-                            <FontAwesomeIcon icon={faPlus} className="text-sm" />
+                        <button onClick={handleAdd} disabled={isLoading} className={`px-4 py-2 bg-${activeTabData?.color}-500 hover:bg-${activeTabData?.color}-700 text-white rounded-lg transition-colors flex items-center space-x-2 font-medium`}>
+                            {isLoading ? <FontAwesomeIcon icon={faSpinner} className={`text-sm mr-2 animate-spin`} /> : <FontAwesomeIcon icon={faPlus} className="text-sm" />}
                             <span>Añadir {activeTabData?.label.slice(0, -1)}</span>
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div >

@@ -8,7 +8,7 @@ interface Stat {
     totalUsers: number | undefined
 }
 
-const AdminStatsCards = ({ stats } : { stats: Stat}) => {
+const AdminStatsCards = ({ stats }: { stats: Stat }) => {
     const statsData = [
         {
             title: 'Categorías',
@@ -79,9 +79,8 @@ const AdminStatsCards = ({ stats } : { stats: Stat}) => {
                             <p className="text-sm text-gray-500">
                                 {stat.description}
                             </p>
-                            <div className={`flex items-center space-x-1 text-sm font-medium ${
-                                stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                            }`}>
+                            <div className={`flex items-center space-x-1 text-sm font-medium ${stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                                }`}>
                                 <FontAwesomeIcon
                                     icon={stat.changeType === 'positive' ? faArrowUp : faArrowDown}
                                     className="text-xs"

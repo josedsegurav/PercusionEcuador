@@ -56,7 +56,6 @@ export default function ProductEditForm({ form, product, categories, vendors }: 
         }
     };
 
-    console.log("img", selectedImage)
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -79,8 +78,6 @@ export default function ProductEditForm({ form, product, categories, vendors }: 
         }
     };
 
-    console.log("bucket:", bucket)
-    console.log(formData)
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -110,7 +107,7 @@ export default function ProductEditForm({ form, product, categories, vendors }: 
                 }
             }
 
-            if (form == 'edit') {
+            if (product && form == 'edit') {
                 // Update product data
                 const fileNameText = selectedImage?.name.split('.')[0]
                 const { error } = await supabase.from("products").update({
@@ -119,8 +116,8 @@ export default function ProductEditForm({ form, product, categories, vendors }: 
                     category_id: formData.category_id,
                     vendor_id: formData.vendor_id,
                     sku: formData.sku,
-                    bucket_id: product?.bucket_id,
-                    image_name: selectedImage ? `product_${fileNameText}.${selectedImage.name.split('.').pop()}` : product?.image_name,
+                    bucket_id: product.bucket_id,
+                    image_name: selectedImage ? `product_${fileNameText}.${selectedImage.name.split('.').pop()}` : product.image_name,
                     cost_price: Number(formData.cost_price),
                     selling_price: Number(formData.selling_price),
                     stock_quantity: Number(formData.stock_quantity),
@@ -168,7 +165,12 @@ export default function ProductEditForm({ form, product, categories, vendors }: 
     };
 
     const handleCancel = () => {
-        router.push(`/admin/products/${product?.id}`);
+        if(product && form == 'edit'){
+            router.push(`/admin/products/${product.id}`);
+        } else if(form == 'add'){
+            router.push(`/admin/?tab=products`);
+        }
+
     };
 
     return (
@@ -188,7 +190,7 @@ export default function ProductEditForm({ form, product, categories, vendors }: 
                 </div>
                 <div className="ml-13">
                     <p className="text-2xl font-bold text-gray-600">
-                        #{product?.id}
+                        #{product.id}
                     </p>
                     <p className="text-gray-500 text-sm mt-1">
                         El ID no puede ser modificado

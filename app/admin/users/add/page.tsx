@@ -1,62 +1,56 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faTags,
+    faPlus
 } from '@fortawesome/free-solid-svg-icons';
 import Header from '@/components/header';
 import BackButton from '@/components/backButton';
-import CategoryEditForm from '@/components/categoryEditForm';
-import { createClient } from '@/lib/supabase/server';
+import UserEditForm from '@/components/UserEditForm';
 
 
-export default async function CategoryEditPage({ params, }: { params: Promise<{ id: string }> }) {
-    const id = (await params).id;
-    const supabase = await createClient();
-
-    const { data: category } = await supabase.from("categories").select("*").eq("id", id).single()
-
+export default async function UserAddPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Page Header */}
             <Header
-                currentPage="Categorías"
-                title={`Editar: ${category.name}`}
-                description="Modifica los datos de la categoría seleccionada"
-                count={category.id}
-                countDescription="ID de Categoría"
+                currentPage="Usuarios"
+                title="Agregar Nueva Usuario"
+                description="Crea un nuevo usuario"
+                count="+"
+                countDescription="Nuevo usuario"
             />
 
-            <div className="max-w-4xl mx-auto px-4 py-8">
+            <div className="max-w-6xl mx-auto px-4 py-8">
                 {/* Navigation */}
                 <div className="flex items-center justify-between mb-6">
-                    <BackButton href={`/admin/categories/${category.id}`} />
+                    <BackButton href="/admin?tab=users" />
                     <div className="text-sm text-gray-500">
-                        <span className="font-medium">Editando ID:</span> #{category.id}
+                        <span className="font-medium">Creando:</span> Nuevo usuario
                     </div>
                 </div>
 
                 {/* Main Content */}
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                     {/* Header Section */}
-                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-6">
+                    <div className="bg-gradient-to-r from-orange-600 to-orange-800 px-8 py-6">
                         <div className="flex items-center space-x-4">
                             <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
                                 <FontAwesomeIcon
-                                    icon={faTags}
+                                    icon={faPlus}
                                     className="text-white text-2xl"
                                 />
                             </div>
                             <div>
                                 <div className="mb-2">
-                                    <span className="text-blue-200 text-sm font-medium">
-                                        Editando ID: #{category.id}
+                                    <span className="text-emerald-200 text-sm font-medium">
+                                    Nuevo usuario
                                     </span>
                                 </div>
                                 <h1 className="text-3xl font-bold text-white">
-                                    Editar Categoría
+                                    Agregar usuario
                                 </h1>
-                                <p className="text-blue-100 text-sm mt-1">
-                                    Modifica la información de la categoría
+                                <p className="text-emerald-100 text-sm mt-1">
+                                    Completa la información para crear un nuevo usuario
                                 </p>
                             </div>
                         </div>
@@ -64,7 +58,10 @@ export default async function CategoryEditPage({ params, }: { params: Promise<{ 
 
                     {/* Form Section */}
                     <div className="p-8">
-                        <CategoryEditForm form='edit' category={category} />
+                        <UserEditForm
+                            form='add'
+                            user={null}
+                        />
                     </div>
                 </div>
             </div>

@@ -29,9 +29,9 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
 
     useEffect(() => {
         setCartItems(items);
-        console.log(items);
+
     }, [items]);
-    console.log(customerName);
+
     const getShippingCost = () => {
         switch (shippingOption) {
             case 'express':

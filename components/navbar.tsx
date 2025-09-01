@@ -53,7 +53,7 @@ export default function Navbar() {
         </button>
         {/* Logo */}
         <Link href="/" className="flex items-center text-xl font-bold text-gray-800">
-          <Image src="/pec.png" alt="Drum" width={160} height={160} />
+          <Image src="/pec.png" alt="Drum" width={180} height={0} className="w-auto h-auto " />
         </Link>
 
         {/* Mobile Menu buttons */}

@@ -131,7 +131,7 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
                                     src={product.image}
                                     alt={product?.name}
                                     id="mainProductImage"
-                                    className="w-full h-full object-contain cursor-zoom-in"
+                                    className="w-auto h-auto object-contain cursor-zoom-in"
                                     width={500}
                                     height={500}
                                 />

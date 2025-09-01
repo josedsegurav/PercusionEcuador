@@ -46,7 +46,6 @@ export default async function Products() {
         };
     });
 
-    console.log(products);
 
     const totalProducts = products.length;
 
