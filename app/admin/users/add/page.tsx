@@ -4,7 +4,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import Header from '@/components/header';
 import BackButton from '@/components/backButton';
-import UserEditForm from '@/components/UserEditForm';
+import UserEditForm from '@/components/userEditForm';
 
 
 export default async function UserAddPage() {
