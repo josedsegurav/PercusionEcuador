@@ -19,7 +19,9 @@ export default function DeleteButton({ href, item, itemData, table, }: { href: s
     const [id, setId] = useState<number>();
     const [idError, setIdError] = useState(false);
     console.log(itemData.id)
-    const handleDelete = async () => {
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         if (itemData.id == id) {
             setIsLoading(true);
 
@@ -28,8 +30,8 @@ export default function DeleteButton({ href, item, itemData, table, }: { href: s
                 try {
                     console.log("Deleting image")
                     const { error } = await supabase.storage
-                        .from(itemData.bucket_id)
-                        .remove([itemData.image_name]);
+                        .from(`${itemData.bucket_id}`)
+                        .remove([`${itemData.image_name}`]);
 
                     if (error) {
                         console.error('Delete image failed:', error);
@@ -42,7 +44,9 @@ export default function DeleteButton({ href, item, itemData, table, }: { href: s
 
             try {
                 console.log("Deleting item")
-                const { error } = await supabase.from(table).delete().eq('id', itemData.id);
+                console.log("id", itemData.id)
+                const { error } = await supabase.from(`${table}`).delete().eq('id', itemData.id);
+
                 if (error) {
                     console.error(error);
                 } else {
@@ -75,21 +79,23 @@ export default function DeleteButton({ href, item, itemData, table, }: { href: s
                         <h1 className="text-2xl font-bold text-gray-900 mb-2">Borrar {item}</h1>
                         <p className="text-gray-700 mb-2 font-bold">¿Estás seguro de querer borrar este item?</p>
                         <p className="text-gray-700 mb-2 font-bold">Esta acción es irreversible.</p>
-                        <input
-                            type="number"
-                            className="border bg-white border-gray-300 rounded-lg p-2"
-                            placeholder={`Ingrese el ID de ${item}`}
-                            onChange={(e) => setId(e.target.value === "" ? undefined : Number(e.target.value))}
-                        />
-                        <button
-                            onClick={handleDelete}
-                            className="bg-red-500 text-white inline-flex items-center ml-2 px-4 py-2 text-white hover:bg-red-800 rounded-lg transition-colors font-medium"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? <FontAwesomeIcon icon={faSpinner} className={`text-sm mr-2 animate-spin`} /> : <FontAwesomeIcon icon={faTrash} className="text-sm mr-2" />}
-                            Borrar
-                        </button>
-                        {idError ? <p className='mt-2 font-bold'>El ID no es correcto</p> : ''}
+                        <form onSubmit={handleSubmit}>
+                            <input
+                                type="number"
+                                className="border bg-white border-gray-300 rounded-lg p-2"
+                                placeholder={`Ingrese el ID de ${item}`}
+                                onChange={(e) => setId(e.target.value === "" ? undefined : Number(e.target.value))}
+                            />
+                            <button
+                                type='submit'
+                                className="bg-red-500 text-white inline-flex items-center ml-2 px-4 py-2 text-white hover:bg-red-800 rounded-lg transition-colors font-medium"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? <FontAwesomeIcon icon={faSpinner} className={`text-sm mr-2 animate-spin`} /> : <FontAwesomeIcon icon={faTrash} className="text-sm mr-2" />}
+                                Borrar
+                            </button>
+                            {idError ? <p className='mt-2 font-bold'>El ID no es correcto</p> : ''}
+                        </form>
                     </div>
                     {isLoading ? '' : <button
                         onClick={handleCancel}
