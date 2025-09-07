@@ -70,3 +70,13 @@ export interface Vendor {
     created_at?: string;
     updated_at?: string;
 }
+
+export interface Order {
+    id: number;
+    order_number: number;
+    customer_name: string;
+    payment_status: string;
+    created_at?: string;
+    updated_at?: string;
+
+}

@@ -6,6 +6,7 @@ import Header from '@/components/header';
 import BackButton from '@/components/backButton';
 import CategoryEditForm from '@/components/categoryEditForm';
 import { createClient } from '@/lib/supabase/server';
+import DeleteButton from '@/components/deleteButton';
 
 
 export default async function CategoryEditPage({ params, }: { params: Promise<{ id: string }> }) {
@@ -38,7 +39,7 @@ export default async function CategoryEditPage({ params, }: { params: Promise<{ 
                 {/* Main Content */}
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                     {/* Header Section */}
-                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-6">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-6 flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                             <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
                                 <FontAwesomeIcon
@@ -60,6 +61,12 @@ export default async function CategoryEditPage({ params, }: { params: Promise<{ 
                                 </p>
                             </div>
                         </div>
+                        <DeleteButton
+                            href={`/admin/?tab=`}
+                            item={"categoría"}
+                            itemData={category}
+                            table='categories'
+                        />
                     </div>
 
                     {/* Form Section */}

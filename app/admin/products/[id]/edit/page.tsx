@@ -7,6 +7,7 @@ import BackButton from '@/components/backButton';
 import ProductEditForm from '@/components/productEditForm';
 import { createClient } from '@/lib/supabase/server';
 import { Product } from '@/app/utils/types';
+import DeleteButton from '@/components/deleteButton';
 
 export default async function ProductEditPage({ params, }: { params: Promise<{ id: string }> }) {
     const id = (await params).id;
@@ -75,7 +76,6 @@ export default async function ProductEditPage({ params, }: { params: Promise<{ i
     }
 
 
-
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Page Header */}
@@ -99,7 +99,7 @@ export default async function ProductEditPage({ params, }: { params: Promise<{ i
                 {/* Main Content */}
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                     {/* Header Section */}
-                    <div className="bg-gradient-to-r from-green-600 to-green-800 px-8 py-6">
+                    <div className="bg-gradient-to-r from-green-600 to-green-800 px-8 py-6 flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                             <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
                                 <FontAwesomeIcon
@@ -121,6 +121,12 @@ export default async function ProductEditPage({ params, }: { params: Promise<{ i
                                 </p>
                             </div>
                         </div>
+                        <DeleteButton
+                            href={`/admin/?tab=`}
+                            item={"producto"}
+                            itemData={product}
+                            table='products'
+                        />
                     </div>
 
                     {/* Form Section */}
