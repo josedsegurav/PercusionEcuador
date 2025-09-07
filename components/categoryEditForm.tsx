@@ -59,7 +59,7 @@ export default function CategoryEditForm({ category, form }: { category: Categor
             } else {
                 setIsSubmitting(false);
                 // Redirect back to view page
-                router.push('/admin/categories/?tab=categories');
+                router.push('/admin/?tab=categories');
                 router.refresh(); // Refresh the server component
             }
         }
