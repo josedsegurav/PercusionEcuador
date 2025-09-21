@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck, faCreditCard, faDrum, faEnvelope, faMoneyBillWave, faPlus, faShippingFast, faShoppingCart, faSpinner, faStickyNote, faTruck, faUniversity } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faCheck, faCreditCard, faDrum, faEnvelope, faMoneyBillWave, faPlus, faShippingFast, faShoppingCart, faSpinner, faStickyNote, faUniversity } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faExclamationTriangle, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -10,30 +10,84 @@ import Image from "next/image";
 import { Item } from "@/store/cartStore";
 import Link from "next/link";
 import { User } from "@/app/utils/types";
+import { useFormValidation, checkoutFormSchema, CheckoutFormData } from "@/lib/use-form-validation";
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 const CartContainer = ({ items, userData }: { items: Item[], userData: User }) => {
+    const router = useRouter();
+    const supabase = createClient();
     const { updateQuantity: updateQuantityStore, removeFromCart, clearCart: clearCartStore, getTotal } = useCartStore();
     const [cartItems, setCartItems] = useState(items);
     const [subTotal, setSubTotal] = useState(getTotal());
-    const [customerName, setCustomerName] = useState(userData ? userData.first_name + ' ' + userData.last_name : '');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [shippingAddress, setShippingAddress] = useState('');
-    const [billingAddress, setBillingAddress] = useState('');
+    // const [customerName, setCustomerName] = useState(userData ? userData.first_name + ' ' + userData.last_name : '');
+    // const [email, setEmail] = useState('');
+    // const [phone, setPhone] = useState('');
+    // const [shippingAddress, setShippingAddress] = useState('');
+    // const [billingAddress, setBillingAddress] = useState('');
     const [sameAsBilling, setSameAsBilling] = useState(true);
-    const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
-    const [shippingOption, setShippingOption] = useState('standard');
-    const [notes, setNotes] = useState('');
+    // const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
+    // const [shippingOption, setShippingOption] = useState('standard');
+    // const [notes, setNotes] = useState('');
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isFormValid, setIsFormValid] = useState(false);
+    console.log(isFormValid)
+    const [formData, setFormData] = useState<CheckoutFormData>({
+        customerName: userData ? `${userData.first_name} ${userData.last_name}` : '',
+        email: userData?.email || '',
+        phone: userData?.phone || '',
+        shippingAddress: '',
+        billingAddress: '',
+        paymentMethod: 'bank_transfer',
+        shippingOption: 'standard',
+        notes: ''
+    });
+
+    const { errors, validate, validateField, clearFieldError } = useFormValidation(checkoutFormSchema);
 
     useEffect(() => {
         setCartItems(items);
 
+
     }, [items]);
 
+    useEffect(() => {
+        // Form validation
+        const validation = validate(formData)
+
+        if (validation.success && agreeTerms
+            // formData.customerName.trim() !== '' &&
+            // formData.email.trim() !== '' &&
+            // formData.phone.trim() !== '' &&
+            // formData.shippingAddress.trim() !== '' &&
+            // (!sameAsBilling ? formData.billingAddress?.trim() !== '' : true) &&
+            // agreeTerms
+        ) {
+            setIsFormValid(true)
+        } else {
+            setIsFormValid(false)
+        }
+    }, [formData, agreeTerms])
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+
+
+        // Clear field error when user starts typing
+        clearFieldError(name);
+
+        // Validate field in real-time
+        validateField(name, value);
+    };
+
     const getShippingCost = () => {
-        switch (shippingOption) {
+        switch (formData.shippingOption) {
             case 'express':
                 return 5.00;
             case 'standard':
@@ -71,11 +125,27 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
         setSubTotal(0);
     };
 
+    const generatOrderNumber = () => {
+        const currentDate = new Date();
+        const timestamp = (currentDate: Date) => {
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            return `${year}${month}${day}`;
+        }
+        const formattedDate = timestamp(currentDate)
+        const addedDigits = Math.random() * (9999 - 1000) + 1000;
+
+        return `PE${formattedDate}${Math.floor(addedDigits)}`
+
+    }
+
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Additional validation check
-        if (!isFormValid()) {
+        if (!isFormValid) {
             alert('Please fill in all required fields and accept the terms and conditions.');
             return;
         }
@@ -83,41 +153,63 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
         setIsSubmitting(true);
 
         try {
-            const orderData = {
-                customer_name: customerName,
-                customer_email: email,
-                customer_phone: phone,
-                shipping_address: shippingAddress,
-                billing_address: sameAsBilling ? shippingAddress : billingAddress,
-                payment_method: paymentMethod,
-                notes: notes,
-                subtotal: subTotal,
-                tax_amount: getTaxAmount(),
-                shipping_cost: getShippingCost(),
-                total_amount: getTotalAmount(),
-                shipping_option: shippingOption
-            };
-
-            const response = await fetch('/cart/checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': getCsrfToken(),
-                },
-                body: JSON.stringify(orderData)
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                if (result.redirect_url) {
-                    window.location.href = result.redirect_url;
-                } else {
-                    clearCartStore();
-                    alert('Order placed successfully!');
-                }
+            console.log("Start Insert")
+            const { error } = await supabase.from("orders").insert({
+                order_number: generatOrderNumber(),
+                customer_email: formData.email,
+                customer_name: formData.customerName,
+                customer_phone: formData.phone,
+                shipping_address: formData.shippingAddress,
+                billing_address: sameAsBilling ? formData.shippingAddress : formData.billingAddress,
+                subtotal: subTotal.toFixed(2),
+                tax_amount: getTaxAmount().toFixed(2),
+                // shipping_cost:
+                total_amount: getTotalAmount().toFixed(2),
+                status: 'pending',
+                payment_status: 'pending',
+                payment_method: formData.paymentMethod,
+                notes: formData.notes,
+                // shipped_date:
+            })
+            console.log("Inserted")
+            if (error) {
+                console.log(error)
             } else {
-                throw new Error('Failed to place order');
+                setIsSubmitting(false);
+                clearCart();
+                const orderSummary = `
+*New Order - Percussion Ecuador*
+
+*Customer:* ${formData.customerName}
+*Email:* ${formData.email}
+*Phone:* ${formData.phone}
+
+*Shipping Address:*
+${formData.shippingAddress}
+
+*Items:*
+${cartItems.map(item => `• ${item.name} x${item.quantity} - $${(item.selling_price * item.quantity).toFixed(2)}`).join('\n')}
+
+*Order Summary:*
+Subtotal: $${subTotal.toFixed(2)}
+Shipping: ${getShippingCost() === 0 ? 'Free' : `$${getShippingCost().toFixed(2)}`}
+Tax: $${getTaxAmount().toFixed(2)}
+*Total: $${getTotalAmount().toFixed(2)}*
+
+*Payment Method:* ${formData.paymentMethod.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+
+${formData.notes ? `*Notes:* ${formData.notes}` : ''}
+    `.trim();
+
+                const whatsappUrl = `https://wa.me/593996888655?text=${encodeURIComponent(orderSummary)}`;
+                window.open(whatsappUrl, '_blank');
+
+                // Redirect back to view page
+                router.push('/');
+                router.refresh(); // Refresh the server component
             }
+
+
         } catch (error) {
             console.error('Error placing order:', error);
             alert('There was an error placing your order. Please try again.');
@@ -129,55 +221,25 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
     // WhatsApp order handler
     const handleWhatsAppOrder = () => {
 
-        if (!isFormValid()) {
+        if (!isFormValid) {
             alert('Please fill in all required fields and accept the terms and conditions.');
             return;
         }
 
-        const orderSummary = `
-*New Order - Percussion Ecuador*
 
-*Customer:* ${customerName}
-*Email:* ${email}
-*Phone:* ${phone}
-
-*Shipping Address:*
-${shippingAddress}
-
-*Items:*
-${cartItems.map(item => `• ${item.name} x${item.quantity} - $${(item.selling_price * item.quantity).toFixed(2)}`).join('\n')}
-
-*Order Summary:*
-Subtotal: $${subTotal.toFixed(2)}
-Shipping: ${getShippingCost() === 0 ? 'Free' : `$${getShippingCost().toFixed(2)}`}
-Tax: $${getTaxAmount().toFixed(2)}
-*Total: $${getTotalAmount().toFixed(2)}*
-
-*Payment Method:* ${paymentMethod.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-
-${notes ? `*Notes:* ${notes}` : ''}
-    `.trim();
-
-        const whatsappUrl = `https://wa.me/593996888655?text=${encodeURIComponent(orderSummary)}`;
-        window.open(whatsappUrl, '_blank');
     };
 
-    // Form validation
-    const isFormValid = () => {
+
+    const ErrorMessage = ({ field }: { field: string }) => {
+        const error = errors[field]
         return (
-            customerName.trim() !== '' &&
-            email.trim() !== '' &&
-            phone.trim() !== '' &&
-            shippingAddress.trim() !== '' &&
-            (!sameAsBilling ? billingAddress.trim() !== '' : true) &&
-            paymentMethod !== '' &&
-            agreeTerms
-        );
-    };
+            <p className="text-red-500 text-xs mt-1 flex items-center">
+                <FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />
+                {error}
+            </p>
 
-    const getCsrfToken = () => {
-        return document.querySelector("meta[name='csrf-token']")?.getAttribute("content") || '';
-    };
+        )
+    }
 
     return (
         cartItems.length !== 0 ? (
@@ -317,24 +379,34 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                             <input
                                                 type="text"
                                                 id="customerName"
+                                                name="customerName"
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 placeholder="Tu nombre completo"
                                                 defaultValue={userData ? userData.first_name + ' ' + userData.last_name : ''}
-                                                onChange={(e) => setCustomerName(e.target.value)}
+                                                onChange={handleInputChange}
                                                 required
                                             />
+
+                                            {errors.customerName && (
+                                                <ErrorMessage field="customerName" />
+                                            )}
+
                                         </div>
                                         <div className="mt-3">
                                             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico *</label>
                                             <input
                                                 type="email"
                                                 id="email"
+                                                name="email"
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 placeholder="tu@correo.com"
                                                 defaultValue={userData ? userData.email : ''}
-                                                onChange={(e) => setEmail(e.target.value)}
+                                                onChange={handleInputChange}
                                                 required
                                             />
+                                            {errors.email && (
+                                                <ErrorMessage field="email" />
+                                            )}
                                             <div className="text-xs text-gray-500 mt-1">La confirmación se enviará aquí</div>
                                         </div>
 
@@ -343,12 +415,16 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                             <input
                                                 type="tel"
                                                 id="phone"
+                                                name="phone"
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 placeholder="+593 999 999 999"
                                                 defaultValue={userData ? userData.phone : ''}
-                                                onChange={(e) => setPhone(e.target.value)}
+                                                onChange={handleInputChange}
                                                 required
                                             />
+                                            {errors.phone && (
+                                                <ErrorMessage field="phone" />
+                                            )}
                                             <div className="text-xs text-gray-500 mt-1">Requerido para coordinar entrega</div>
                                         </div>
                                     </div>
@@ -362,13 +438,17 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                             <label htmlFor="shippingAddress" className="block text-sm font-semibold text-gray-700 mb-1">Dirección de Envío *</label>
                                             <textarea
                                                 id="shippingAddress"
+                                                name="shippingAddress"
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 rows={4}
                                                 placeholder="Dirección, ciudad, provincia, código postal"
-                                                value={shippingAddress}
-                                                onChange={(e) => setShippingAddress(e.target.value)}
+                                                defaultValue={formData.shippingAddress}
+                                                onChange={handleInputChange}
                                                 required
                                             />
+                                            {errors.shippingAddress && (
+                                                <ErrorMessage field="shippingAddress" />
+                                            )}
                                         </div>
                                         <div className="flex items-center mb-3">
                                             <input
@@ -387,13 +467,17 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                 <label htmlFor="billingAddress" className="block text-sm font-semibold text-gray-700 mb-1">Dirección de Facturación *</label>
                                                 <textarea
                                                     id="billingAddress"
+                                                    name="billingAddress"
                                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     rows={4}
                                                     placeholder="Dirección, ciudad, provincia, código postal"
-                                                    value={billingAddress}
-                                                    onChange={(e) => setBillingAddress(e.target.value)}
+                                                    defaultValue={formData.billingAddress}
+                                                    onChange={handleInputChange}
                                                     required
                                                 />
+                                                {errors.billingAddress && (
+                                                    <ErrorMessage field="billingAddress" />
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -411,8 +495,8 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                     name="paymentMethod"
                                                     id="bank_transfer"
                                                     value="bank_transfer"
-                                                    checked={paymentMethod === 'bank_transfer'}
-                                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                                    checked={formData.paymentMethod === 'bank_transfer'}
+                                                    onChange={handleInputChange}
                                                 />
                                                 <label className="flex items-center text-gray-700" htmlFor="bank_transfer">
                                                     <FontAwesomeIcon icon={faUniversity} className="mr-2 text-blue-600" />Transferencia Bancaria
@@ -425,8 +509,8 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                     name="paymentMethod"
                                                     id="cash_on_delivery"
                                                     value="cash_on_delivery"
-                                                    checked={paymentMethod === 'cash_on_delivery'}
-                                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                                    checked={formData.paymentMethod === 'cash_on_delivery'}
+                                                    onChange={handleInputChange}
                                                 />
                                                 <label className="flex items-center text-gray-700" htmlFor="cash_on_delivery">
                                                     <FontAwesomeIcon icon={faMoneyBillWave} className="mr-2 text-green-600" />Pago Contra Entrega
@@ -437,20 +521,20 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                     className="mr-3 text-blue-600 focus:ring-blue-500"
                                                     type="radio"
                                                     name="paymentMethod"
-                                                    id="whatsapp_order"
-                                                    value="whatsapp_order"
-                                                    checked={paymentMethod === 'whatsapp_order'}
-                                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                                    id="credit_card"
+                                                    value="credit_card"
+                                                    checked={formData.paymentMethod === 'credit_card'}
+                                                    onChange={handleInputChange}
                                                 />
-                                                <label className="flex items-center text-gray-700" htmlFor="whatsapp_order">
-                                                    <FontAwesomeIcon icon={faWhatsapp} className="mr-2 text-green-600" />Pedido por WhatsApp
+                                                <label className="flex items-center text-gray-700" htmlFor="credit_card">
+                                                    <FontAwesomeIcon icon={faCreditCard} className="mr-2 text-green-600" />Tarjeta de Credito
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Shipping Options */}
-                                    <div>
+                                    {/* <div>
                                         <h5 className="text-lg font-semibold mb-3 text-blue-600 flex items-center">
                                             <FontAwesomeIcon icon={faTruck} className="mr-2" />Opciones de Envío
                                         </h5>
@@ -463,8 +547,8 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                         name="shippingOption"
                                                         id="standard_shipping"
                                                         value="standard"
-                                                        checked={shippingOption === 'standard'}
-                                                        onChange={(e) => setShippingOption(e.target.value)}
+                                                        checked={formData.shippingOption === 'standard'}
+                                                        onChange={handleInputChange}
                                                     />
                                                     <label htmlFor="standard_shipping" className="text-gray-700">
                                                         Envío Estándar (3-5 días hábiles)
@@ -480,8 +564,8 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                         name="shippingOption"
                                                         id="express_shipping"
                                                         value="express"
-                                                        checked={shippingOption === 'express'}
-                                                        onChange={(e) => setShippingOption(e.target.value)}
+                                                        checked={formData.shippingOption === 'express'}
+                                                        onChange={handleInputChange}
                                                     />
                                                     <label htmlFor="express_shipping" className="text-gray-700">
                                                         Envío Rápido (1-2 días hábiles)
@@ -497,8 +581,8 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                         name="shippingOption"
                                                         id="pickup"
                                                         value="pickup"
-                                                        checked={shippingOption === 'pickup'}
-                                                        onChange={(e) => setShippingOption(e.target.value)}
+                                                        checked={formData.shippingOption === 'pickup'}
+                                                        onChange={handleInputChange}
                                                     />
                                                     <label htmlFor="pickup" className="text-gray-700">
                                                         Recoger en Tienda (Disponible al día siguiente)
@@ -507,7 +591,7 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                 <span className="text-green-600 font-semibold">Gratis</span>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     {/* Order Notes */}
                                     <div>
@@ -517,12 +601,16 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                         <label htmlFor="notes" className="block text-sm font-semibold text-gray-700 mb-1">Notas del Pedido (Opcional)</label>
                                         <textarea
                                             id="notes"
+                                            name="notes"
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             rows={4}
                                             placeholder="Instrucciones especiales, preferencias de entrega, o preguntas..."
-                                            value={notes}
-                                            onChange={(e) => setNotes(e.target.value)}
+                                            defaultValue={formData.notes}
+                                            onChange={handleInputChange}
                                         />
+                                        {errors.notes && (
+                                            <ErrorMessage field="notes" />
+                                        )}
                                     </div>
 
                                     {/* Terms and Conditions */}
@@ -536,6 +624,9 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                 onChange={(e) => setAgreeTerms(e.target.checked)}
                                                 required
                                             />
+                                            {errors.agreeTerms && (
+                                                <ErrorMessage field="agreeTerms" />
+                                            )}
                                             <label className="text-sm text-gray-700" htmlFor="agreeTerms">
                                                 Acepto los <a href="#" className="text-blue-600 hover:underline">Términos y Condiciones</a> y la
                                                 <a href="#" className="text-blue-600 hover:underline"> Política de Privacidad</a> *
@@ -549,10 +640,10 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                             <span>Subtotal:</span>
                                             <span>${subTotal.toFixed(2)}</span>
                                         </div>
-                                        <div className="flex justify-between items-center mb-2">
+                                        {/* <div className="flex justify-between items-center mb-2">
                                             <span>Envío:</span>
                                             <span>{getShippingCost() === 0 ? 'Gratis' : `$${getShippingCost().toFixed(2)}`}</span>
-                                        </div>
+                                        </div> */}
                                         <div className="flex justify-between items-center mb-2">
                                             <span>Impuesto:</span>
                                             <span>${getTaxAmount().toFixed(2)}</span>
@@ -569,7 +660,7 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                         <button
                                             type="submit"
                                             className="w-full bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-lg font-medium"
-                                            disabled={isSubmitting || !isFormValid()}
+                                            disabled={isSubmitting || !isFormValid}
                                         >
                                             {isSubmitting ? (
                                                 <>
@@ -581,17 +672,18 @@ ${notes ? `*Notes:* ${notes}` : ''}
                                                 </>
                                             )}
                                         </button>
-                                        {paymentMethod === 'whatsapp_order' && (
+                                        <div className="text-xs text-gray-500 mt-1">Pedido continuara en Whatsapp</div>
+                                        {formData.paymentMethod === 'whatsapp_order' && (
                                             <button
                                                 type="button"
                                                 className="w-full bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                disabled={!isFormValid()}
+                                                disabled={!isFormValid}
                                                 onClick={handleWhatsAppOrder}
                                             >
                                                 <FontAwesomeIcon icon={faWhatsapp} className="mr-2" />Continuar con WhatsApp
                                             </button>
                                         )}
-                                        {!isFormValid() && (
+                                        {!isFormValid && (
                                             <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded flex items-center">
                                                 <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
                                                 Por favor completa todos los campos requeridos y acepta los términos y condiciones.

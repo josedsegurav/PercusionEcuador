@@ -8,15 +8,22 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faCheckCircle, faDrum, faEnvelope, faStore, faTag, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { urlParamsSchema } from "@/lib/validations";
 
 
 export default async function ProductPage({ params, }: { params: Promise<{ slug: string }> }) {
+    try {
+        const slugArray = (await params).slug.split('-');
+        const id = slugArray.pop();
+        const slug = slugArray.join('-');
 
-    const slugArray = (await params).slug.split('-');
-    const id = slugArray.pop();
-    const slug = slugArray.join('-');
+        // Validate URL parameters
+        const validationResult = urlParamsSchema.safeParse({ id, slug });
+        if (!validationResult.success) {
+            return notFound();
+        }
 
-    const supabase = await createClient();
+        const supabase = await createClient();
 
 
     const { data: productData, error } = await supabase.from('products').select(`
@@ -131,7 +138,7 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
                                     src={product.image}
                                     alt={product?.name}
                                     id="mainProductImage"
-                                    className="w-auto h-auto object-contain cursor-zoom-in"
+                                    className="w-auto h-auto object-fill cursor-zoom-in"
                                     width={500}
                                     height={500}
                                 />
@@ -278,4 +285,8 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
             )}
         </div>
     );
+    } catch (error) {
+        console.error('Error in ProductPage:', error);
+        return notFound();
+    }
 }

@@ -210,7 +210,7 @@ export default async function Home() {
                 <Link href="https://www.facebook.com/percusionecuador" className="bg-blue-600 hover:bg-blue-700 text-white w-15 h-15 rounded-full flex items-center justify-center transition-colors duration-300">
                   <FontAwesomeIcon icon={faFacebook} className="w-5 h-5 text-3xl" />
                 </Link>
-                <Link href="https://www.instagram.com/percusion_ec/" className="bg-pink-600 hover:bg-pink-700 text-white w-15 h-15 rounded-full flex items-center justify-center transition-colors duration-300">
+                <Link href="https://www.instagram.com/percusion_ecuador/" className="bg-pink-600 hover:bg-pink-700 text-white w-15 h-15 rounded-full flex items-center justify-center transition-colors duration-300">
                   <FontAwesomeIcon icon={faInstagram} className="w-5 h-5 text-3xl" />
                 </Link>
               </div>

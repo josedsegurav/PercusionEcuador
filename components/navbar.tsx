@@ -24,15 +24,30 @@ export default function Navbar() {
 
 
   useEffect(() => {
-    const { } = supabase.auth.onAuthStateChange(
+    // Get initial session
+    const getInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setLoggedIn(session ? true : false);
+
+      if (session) {
+        const { data: userData } = await supabase.from("users").select("*")
+          .eq("email", session.user?.email).single() as { data: User };
+        setUserId(userData);
+      } else {
+        setUserId(null);
+      }
+    };
+
+    getInitialSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setLoggedIn(session ? true : false);
 
         if (session) {
-          const { data: { user } } = await supabase.auth.getUser();
-
           const { data: userData } = await supabase.from("users").select("*")
-            .eq("email", user?.email).single() as { data: User };
+            .eq("email", session.user?.email).single() as { data: User };
           setUserId(userData);
         } else {
           setUserId(null);
@@ -40,6 +55,7 @@ export default function Navbar() {
       }
     );
 
+    return () => subscription.unsubscribe();
   }, []);
 
   const logout = async () => {
