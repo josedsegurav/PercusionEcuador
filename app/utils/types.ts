@@ -76,6 +76,8 @@ export interface Order {
     order_number: number;
     customer_name: string;
     payment_status: string;
+    status: string;
+    total_amount: number;
     created_at?: string;
     updated_at?: string;
 
