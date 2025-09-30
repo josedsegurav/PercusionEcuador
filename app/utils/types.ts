@@ -71,14 +71,33 @@ export interface Vendor {
     updated_at?: string;
 }
 
+export interface OrderItems {
+    id: number;
+    order_id: number;
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+    products: Product;
+}
+
 export interface Order {
     id: number;
     order_number: number;
     customer_name: string;
+    customer_email: string;
+    customer_phone: string;
+    shipping_address: string;
+    billing_address: string;
     payment_status: string;
+    payment_method: string;
     status: string;
+    tax_amount: number;
+    subtotal: number;
+    shipping_cost: number;
     total_amount: number;
+    notes: string;
     created_at?: string;
     updated_at?: string;
+    order_items: Array<OrderItems>;
 
 }

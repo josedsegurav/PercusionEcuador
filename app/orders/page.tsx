@@ -9,7 +9,6 @@ import {
     faUser,
     faArrowRight,
     faLightbulb,
-    faHashtag,
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 // import { useRouter } from 'next/navigation';
@@ -17,6 +16,7 @@ import { createClient } from '@/lib/supabase/client';
 import { getInitialSession } from '@/hooks/userSession';
 import { Order, User } from '../utils/types';
 import Header from '@/components/header';
+import Link from 'next/link';
 
 
 export default function OrderIndex() {
@@ -114,10 +114,15 @@ export default function OrderIndex() {
         });
     };
 
+    const getTotalAmount = (tax: number, subtotal: number) => {
+        const total_amount = tax  + subtotal;
+        return total_amount;
+    }
+
     return (
         <div className="min-h-screen">
             {!user ? (
-                <section className="bg-gradient-to-r from-cyan-900 to-cyan-600 text-white py-20 lg:py-32">
+                <section className="bg-gradient-to-r from-cyan-900 to-percussion text-white py-20 lg:py-32">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid lg:grid-cols-2 gap-12 items-center">
                             <div className="space-y-8">
@@ -135,8 +140,8 @@ export default function OrderIndex() {
                                         Consejos de Búsqueda:
                                     </h6>
                                     <div className="flex items-center text-gray-200">
-                                        <FontAwesomeIcon icon={faHashtag} className="w-4 h-4 mr-2 text-cyan-400" />
-                                        Usa tu número de pedido (ej: PE2025123456)
+                                        @
+                                        Usa tu correo electrónico para buscar tus pedidos
                                     </div>
                                 </div>
 
@@ -146,24 +151,13 @@ export default function OrderIndex() {
                                 <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
                                     <FontAwesomeIcon icon={faSearch} className="w-8 h-8 text-cyan-600" />
                                 </div>
-                                <h3 className="text-2xl font-semibold mb-4">Encuentra tu Pedido</h3>
+                                <h3 className="text-2xl font-semibold mb-4">Encuentra tus Pedidos</h3>
                                 <p className="text-gray-200 mb-6">
-                                    Ingresa cualquiera de los siguientes datos para buscar tu pedido
+                                    Ingresa tu correo electrónico para buscar tus pedidos
                                 </p>
 
                                 <div className="space-y-4">
-                                    <div className="text-left">
-                                        <label className="block text-white font-semibold mb-3">
-                                            Número de Pedido                                    </label>
-                                        <input
-                                            type="text"
-                                            name="order_number"
-                                            value={searchQuery.order_number}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-lg border-0 text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:outline-none bg-white"
-                                            placeholder="ej: PE2025123456"
-                                        />
-                                    </div>
+
                                     <div className="text-left">
                                         <label className="block text-white font-semibold mb-3">
                                             Email
@@ -183,7 +177,7 @@ export default function OrderIndex() {
                                         className="w-full bg-cyan-500 hover:bg-cyan-400 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-300 flex items-center justify-center disabled:opacity-50"
                                     >
                                             <FontAwesomeIcon icon={faSearch} className="w-5 h-5 mr-2" />
-
+                                            Buscar
                                     </button>
                                 </div>
 
@@ -225,7 +219,7 @@ export default function OrderIndex() {
                                     {orders.map((order) => (
                                         <div
                                             key={order.id}
-                                            className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-gray-100"
+                                            className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
                                         >
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
@@ -258,12 +252,12 @@ export default function OrderIndex() {
 
                                             <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                                                 <div className="text-2xl font-bold text-gray-900">
-                                                    ${order.total_amount.toFixed(2)}
+                                                    ${getTotalAmount(order.tax_amount, order.subtotal).toFixed(2)}
                                                 </div>
-                                                <div className="flex items-center text-cyan-600 font-semibold">
+                                                <Link href={`/orders/${order.order_number}`} className="flex items-center text-cyan-600 font-semibold">
                                                     Ver Detalles
                                                     <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4 ml-2" />
-                                                </div>
+                                                </Link>
                                             </div>
                                         </div>
                                     ))}

@@ -71,8 +71,12 @@ export const searchSchema = z.object({
 
 // URL parameter validation
 export const urlParamsSchema = z.object({
-  id: z.string().uuid('Invalid ID format'),
+  id: z.coerce.number('Invalid ID format').positive().optional(),
   slug: z.string().min(1, 'Slug is required').max(100, 'Slug too long').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens')
+});
+
+export const urlOrderParamsSchema = z.object({
+  slug: z.string().min(1, 'Slug is required').max(16, 'Slug too long').regex(/^[a-zA-Z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens')
 });
 
 // Sanitization helper
@@ -96,3 +100,4 @@ export type CategoryInput = z.infer<typeof categorySchema>;
 export type OrderInput = z.infer<typeof orderSchema>;
 export type SearchInput = z.infer<typeof searchSchema>;
 export type UrlParams = z.infer<typeof urlParamsSchema>;
+export type UrlOrderParams = z.infer<typeof urlOrderParamsSchema>;

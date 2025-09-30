@@ -15,7 +15,8 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
     try {
         const slugArray = (await params).slug.split('-');
         const id = slugArray.pop();
-        const slug = slugArray.join('-');
+        const slug = slugArray.join('-').toLowerCase();
+        console.log(id, slug)
 
         // Validate URL parameters
         const validationResult = urlParamsSchema.safeParse({ id, slug });
@@ -92,8 +93,8 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
     });
 
 
-    if (slug !== product.name.replaceAll(" ", "-")) {
-        redirect(`${product.name.replaceAll(" ", "-")}-${product.id}`);
+    if (slug !== product.name.replaceAll(" ", "-").toLowerCase()) {
+        redirect(`${product.name.replaceAll(" ", "-").toLowerCase()}-${product.id}`);
     }
 
     return (
@@ -114,7 +115,7 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
                                 <>
                                     <li>/</li>
                                     <li>
-                                        <Link href={`/categories/${product.categories.id}`} className="hover:underline">
+                                        <Link href={`/categories`} className="hover:underline">
                                             {product.categories.name}
                                         </Link>
                                     </li>
@@ -265,13 +266,13 @@ export default async function ProductPage({ params, }: { params: Promise<{ slug:
                                     </div>
                                     <div className="p-4">
                                         <h6 className="font-semibold mb-2">
-                                            <Link href={`/products/${rp.id}`} className="hover:underline">
+                                            <Link href={`/products/${rp.name.replace(/ /g, '-')}-${rp.id}`} className="hover:underline">
                                                 {rp.name}
                                             </Link>
                                         </h6>
                                         <div className="text-blue-600 font-bold mb-3">${rp.selling_price}</div>
                                         <Link
-                                            href={`/products/${rp.id}`}
+                                            href={`/products/${rp.name.replace(/ /g, '-')}-${rp.id}`}
                                             className="border border-blue-600 text-blue-600 py-2 px-3 rounded-lg block text-center hover:bg-blue-50"
                                         >
                                             Ver producto

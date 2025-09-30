@@ -154,7 +154,7 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
 
         try {
             console.log("Start Insert")
-            const { error } = await supabase.from("orders").insert({
+            const { data, error } = await supabase.from("orders").insert({
                 order_number: generatOrderNumber(),
                 customer_email: formData.email,
                 customer_name: formData.customerName,
@@ -164,50 +164,71 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
                 subtotal: subTotal.toFixed(2),
                 tax_amount: getTaxAmount().toFixed(2),
                 // shipping_cost:
-                total_amount: getTotalAmount().toFixed(2),
                 status: 'pending',
                 payment_status: 'pending',
                 payment_method: formData.paymentMethod,
                 notes: formData.notes,
                 // shipped_date:
-            })
+            }).select()
+
             console.log("Inserted")
+
             if (error) {
                 console.log(error)
             } else {
-                setIsSubmitting(false);
-                clearCart();
-                const orderSummary = `
-*New Order - Percussion Ecuador*
+                if (data) {
+                    cartItems.map(async (item) => {
+                        const { error: orderItemError } = await supabase.from("order_items").insert({
+                            order_id: data[0].id,
+                            product_id: item.id,
+                            quantity: item.quantity,
+                            unit_price: item.selling_price,
+                        })
 
-*Customer:* ${formData.customerName}
-*Email:* ${formData.email}
-*Phone:* ${formData.phone}
+                        if (orderItemError) {
+                            console.log("Error", orderItemError)
+                        } else {
+                            setIsSubmitting(false);
+                            clearCart();
+                            const orderSummary = `
+                *New Order - Percussion Ecuador*
 
-*Shipping Address:*
-${formData.shippingAddress}
+                *Customer:* ${formData.customerName}
+                *Email:* ${formData.email}
+                *Phone:* ${formData.phone}
 
-*Items:*
-${cartItems.map(item => `• ${item.name} x${item.quantity} - $${(item.selling_price * item.quantity).toFixed(2)}`).join('\n')}
+                *Shipping Address:*
+                ${formData.shippingAddress}
 
-*Order Summary:*
-Subtotal: $${subTotal.toFixed(2)}
-Shipping: ${getShippingCost() === 0 ? 'Free' : `$${getShippingCost().toFixed(2)}`}
-Tax: $${getTaxAmount().toFixed(2)}
-*Total: $${getTotalAmount().toFixed(2)}*
+                *Items:*
+                ${cartItems.map(item => `• ${item.name} x${item.quantity} - $${(item.selling_price * item.quantity).toFixed(2)}`).join('\n')}
 
-*Payment Method:* ${formData.paymentMethod.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                *Order Summary:*
+                Subtotal: $${subTotal.toFixed(2)}
+                Shipping: ${getShippingCost() === 0 ? 'Free' : `$${getShippingCost().toFixed(2)}`}
+                Tax: $${getTaxAmount().toFixed(2)}
+                *Total: $${getTotalAmount().toFixed(2)}*
 
-${formData.notes ? `*Notes:* ${formData.notes}` : ''}
-    `.trim();
+                *Payment Method:* ${formData.paymentMethod.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
 
-                const whatsappUrl = `https://wa.me/593996888655?text=${encodeURIComponent(orderSummary)}`;
-                window.open(whatsappUrl, '_blank');
+                ${formData.notes ? `*Notes:* ${formData.notes}` : ''}
+                    `.trim();
 
-                // Redirect back to view page
-                router.push('/');
-                router.refresh(); // Refresh the server component
+                            const whatsappUrl = `https://wa.me/593996888655?text=${encodeURIComponent(orderSummary)}`;
+                            window.open(whatsappUrl, '_blank');
+
+                            // Redirect back to view page
+                            router.push('/');
+                            router.refresh(); // Refresh the server component
+
+                        }
+                    })
+
+                }
+
+
             }
+
 
 
         } catch (error) {
