@@ -54,7 +54,7 @@ export default async function UserViewPage({ params, }: { params: Promise<{ id: 
                 {/* Navigation */}
                 <div className="flex items-center justify-between mb-6">
                     <BackButton href="/admin?tab=users" />
-                    <EditButton href={`/admin/users/${user.id}/edit`} color="blue" />
+                    <EditButton href={`/admin/users/${user.id}/edit`} color="orange" />
                 </div>
 
                 {/* Main Content */}
