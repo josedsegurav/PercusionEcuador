@@ -10,7 +10,7 @@ import Image from "next/image";
 import { Item } from "@/store/cartStore";
 import Link from "next/link";
 import { User } from "@/app/utils/types";
-import { useFormValidation, checkoutFormSchema, CheckoutFormData } from "@/lib/use-form-validation";
+import { useFormValidation, checkoutFormSchema, CheckoutFormData, checkoutFormUserSchema } from "@/lib/use-form-validation";
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -34,9 +34,9 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
     const [isFormValid, setIsFormValid] = useState(false);
     console.log(isFormValid)
     const [formData, setFormData] = useState<CheckoutFormData>({
-        customerName: userData ? `${userData.first_name} ${userData.last_name}` : '',
-        email: userData?.email || '',
-        phone: userData?.phone || '',
+        customerName: '',
+        email: '',
+        phone: '',
         shippingAddress: '',
         billingAddress: '',
         paymentMethod: 'bank_transfer',
@@ -44,17 +44,32 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
         notes: ''
     });
 
+    const { validate: validateUserForm } = useFormValidation(checkoutFormUserSchema);
     const { errors, validate, validateField, clearFieldError } = useFormValidation(checkoutFormSchema);
 
     useEffect(() => {
         setCartItems(items);
 
-
     }, [items]);
 
     useEffect(() => {
+        if (userData) {
+            setFormData({
+                customerName: `${userData.first_name} ${userData.last_name}`,
+                email: userData.email,
+                phone: userData.phone || '',
+                shippingAddress: '',
+                billingAddress: '',
+                paymentMethod: 'bank_transfer',
+                shippingOption: 'standard',
+                notes: ''
+            })
+        }
+    }, [userData])
+
+    useEffect(() => {
         // Form validation
-        const validation = validate(formData)
+        const validation = validate(formData) || validateUserForm(formData)
 
         if (validation.success && agreeTerms
             // formData.customerName.trim() !== '' &&
@@ -85,6 +100,8 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
         // Validate field in real-time
         validateField(name, value);
     };
+
+    console.log(formData)
 
     const getShippingCost = () => {
         switch (formData.shippingOption) {
@@ -377,10 +394,10 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
                                         <span>Impuesto:</span>
                                         <span>${getTaxAmount().toFixed(2)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center mb-2">
+                                    {/* <div className="flex justify-between items-center mb-2">
                                         <span>Envío:</span>
                                         <span>{getShippingCost() === 0 ? 'Gratis' : `$${getShippingCost().toFixed(2)}`}</span>
-                                    </div>
+                                    </div> */}
                                     <hr className="my-3 border-gray-200" />
                                     <div className="flex justify-between items-center">
                                         <span className="text-xl font-bold">Total:</span>
@@ -397,55 +414,71 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
                                         </h5>
                                         <div className="mt-3">
                                             <label htmlFor="customerName" className="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo *</label>
-                                            <input
-                                                type="text"
-                                                id="customerName"
-                                                name="customerName"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="Tu nombre completo"
-                                                defaultValue={userData ? userData.first_name + ' ' + userData.last_name : ''}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-
-                                            {errors.customerName && (
-                                                <ErrorMessage field="customerName" />
+                                            {userData ? (
+                                                <p>{userData.first_name} {userData.last_name}</p>
+                                            ) : (
+                                                <>
+                                                    <input
+                                                        type="text"
+                                                        id="customerName"
+                                                        name="customerName"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        placeholder="Tu nombre completo"
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    />
+                                                    {errors.customerName && (
+                                                        <ErrorMessage field="customerName" />
+                                                    )}
+                                                </>
                                             )}
 
                                         </div>
                                         <div className="mt-3">
                                             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico *</label>
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                name="email"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="tu@correo.com"
-                                                defaultValue={userData ? userData.email : ''}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            {errors.email && (
-                                                <ErrorMessage field="email" />
+                                            {userData ? (
+                                                <p>{userData.email}</p>
+                                            ) : (
+                                                <>
+                                                    <input
+                                                        type="email"
+                                                        id="email"
+                                                        name="email"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        placeholder="tu@correo.com"
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    />
+                                                    {errors.email && (
+                                                        <ErrorMessage field="email" />
+                                                    )}
+                                                </>
                                             )}
-                                            <div className="text-xs text-gray-500 mt-1">La confirmación se enviará aquí</div>
+
+                                            {/* <div className="text-xs text-gray-500 mt-1">La confirmación se enviará aquí</div> */}
                                         </div>
 
                                         <div className="mt-3">
                                             <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-1">Número de Teléfono *</label>
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                name="phone"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="+593 999 999 999"
-                                                defaultValue={userData ? userData.phone : ''}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            {errors.phone && (
-                                                <ErrorMessage field="phone" />
+                                            {userData ? (
+                                                <p>{userData.phone}</p>
+                                            ) : (
+                                                <>
+                                                    <input
+                                                        type="tel"
+                                                        id="phone"
+                                                        name="phone"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        placeholder="+593 999 999 999"
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    />
+                                                    {errors.phone && (
+                                                        <ErrorMessage field="phone" />
+                                                    )}
+                                                </>
                                             )}
+
                                             <div className="text-xs text-gray-500 mt-1">Requerido para coordinar entrega</div>
                                         </div>
                                     </div>
@@ -649,8 +682,8 @@ const CartContainer = ({ items, userData }: { items: Item[], userData: User }) =
                                                 <ErrorMessage field="agreeTerms" />
                                             )}
                                             <label className="text-sm text-gray-700" htmlFor="agreeTerms">
-                                                Acepto los <a href="#" className="text-blue-600 hover:underline">Términos y Condiciones</a> y la
-                                                <a href="#" className="text-blue-600 hover:underline"> Política de Privacidad</a> *
+                                                * Acepto los <a href="#" className="text-blue-600 hover:underline">Términos y Condiciones</a> y la
+                                                <Link href="#" className="text-blue-600 hover:underline"> Política de Privacidad</Link>
                                             </label>
                                         </div>
                                     </div>

@@ -114,6 +114,27 @@ export const checkoutFormSchema = z.object({
     .optional()
 });
 
+export const checkoutFormUserSchema = z.object({
+  shippingAddress: z.string()
+    .min(1, 'Shipping address is required')
+    .max(500, 'Address too long')
+    .trim(),
+  billingAddress: z.string()
+    .max(500, 'Address too long')
+    .trim()
+    .optional(),
+  paymentMethod: z.enum(['bank_transfer', 'credit_card', 'whatsapp_order', 'cash_on_delivery'], {
+    message: 'Invalid payment method'
+  }),
+  shippingOption: z.enum(['standard', 'express', 'pickup'], {
+    message: 'Invalid shipping option'
+  }),
+  notes: z.string()
+    .max(500, 'Notes too long')
+    .trim()
+    .optional()
+});
+
 export const contactFormSchema = z.object({
   name: z.string()
     .min(1, 'Name is required')
@@ -157,5 +178,6 @@ export const productFormSchema = z.object({
 
 // Type exports
 export type CheckoutFormData = z.infer<typeof checkoutFormSchema>;
+export type CheckoutFormUserSchema = z.infer<typeof checkoutFormUserSchema>;
 export type ContactFormData = z.infer<typeof contactFormSchema>;
 export type ProductFormData = z.infer<typeof productFormSchema>;
