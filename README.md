@@ -1,105 +1,97 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Percusión Ecuador - E-commerce Platform
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+A modern, full-stack e-commerce platform for percussion instruments built with Next.js 15, Supabase, and TypeScript. This application serves as the digital storefront for Percusión Ecuador, a specialized percussion instruments retailer established in 2011.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## 🥁 About Percusión Ecuador
 
-## Features
+Percusión Ecuador is Ecuador's specialized percussion accessories store, established in 2011. We offer the best service with top national and international brands, providing continuous education through certifications and classes for percussionists, drummers, educators, and musicians in general.
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+## ✨ Features
 
-## Demo
+### 🛍️ E-commerce Functionality
+- **Product Catalog**: Browse and search percussion instruments by categories
+- **Shopping Cart**: Add/remove items with quantity management
+- **Order Management**: Complete checkout process with order tracking
+- **User Authentication**: Secure login/signup with Supabase Auth
+- **Admin Dashboard**: Full CRUD operations for products, categories, orders, and users
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+### 🎯 Key Capabilities
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Real-time Updates**: Live cart updates and inventory management
+- **Form Validation**: Comprehensive client and server-side validation
+- **Payment Integration**: Multiple payment methods (bank transfer, cash on delivery, credit card)
+- **WhatsApp Integration**: Direct ordering through WhatsApp Business
+- **Image Management**: Supabase Storage for product images
+- **Order Tracking**: Complete order lifecycle management
 
-## Deploy to Vercel
+### 🔧 Technical Features
+- **Next.js 15**: Latest App Router with Server Components
+- **TypeScript**: Full type safety throughout the application
+- **Supabase**: Backend-as-a-Service with PostgreSQL database
+- **Zustand**: State management for shopping cart
+- **Zod**: Schema validation for forms and API
+- **FontAwesome**: Comprehensive icon library
+- **Tailwind CSS**: Utility-first CSS framework
 
-Vercel deployment will guide you through creating a Supabase account and project.
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+## 🛠️ Tech Stack
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **State Management**: Zustand
+- **Validation**: Zod
+- **Icons**: FontAwesome
+- **Deployment**: Vercel (recommended)
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+## 📱 Pages & Features
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+### Public Pages
+- **Home**: Hero section, featured products, company info
+- **Products**: Product catalog with filtering and search
+- **Categories**: Browse products by category
+- **Cart**: Shopping cart with checkout form
+- **Orders**: Order tracking and history
 
-## Clone and run locally
+### Admin Pages
+- **Dashboard**: Overview of products, orders, and users
+- **Products**: Add, edit, delete products
+- **Categories**: Manage product categories
+- **Orders**: View and manage customer orders
+- **Users**: User management and roles
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+### Authentication
+- **Login/Signup**: User registration and authentication
+- **Password Reset**: Forgot password functionality
+- **Protected Routes**: Admin-only access controls
 
-2. Create a Next.js app using the Supabase Starter template npx command
+## 🔐 Security Features
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+- **Row Level Security (RLS)**: Database-level security policies
+- **API Security**: Server-side validation and sanitization
+- **Authentication**: Secure user authentication with Supabase
+- **Authorization**: Role-based access control
+- **Input Validation**: Client and server-side form validation
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+## 🚀 Deployment
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+### Vercel (Recommended)
+1. Connect your GitHub repository to Vercel
+2. Add environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
 
-3. Use `cd` to change into the app's directory
+### Manual Deployment
+1. Build the application: `npm run build`
+2. Start the production server: `npm start`
+3. Configure your hosting platform with the built files
 
-   ```bash
-   cd with-supabase-app
-   ```
+## 📄 License
 
-4. Rename `.env.example` to `.env.local` and update the following:
+This project is proprietary software owned by Percusión Ecuador.
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+## 🙏 Acknowledgments
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
-
-5. You can now run the Next.js local development server:
-
-   ```bash
-   npm run dev
-   ```
-
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
-
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
-
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
-
-## Feedback and issues
-
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
-
-## More Supabase examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+- Built with [Next.js](https://nextjs.org/)
+- Powered by [Supabase](https://supabase.com/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons by [FontAwesome](https://fontawesome.com/)
