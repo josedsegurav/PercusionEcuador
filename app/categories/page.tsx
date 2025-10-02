@@ -134,7 +134,7 @@ export default async function CategoriesPage() {
                                                         )}
                                                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
                                                             <Link
-                                                                href={`/products/${product.id}`}
+                                                                href={`/products/${product.name.replace(/ /g, '-')}-${product.id}`}
                                                                 className="text-white"
                                                             >
                                                                 <FontAwesomeIcon icon={faEye} />
@@ -170,7 +170,7 @@ export default async function CategoriesPage() {
                                             </Link>
                                             {category.products.length > 0 ? (
                                                 <Link
-                                                    href={`/products/${category.products[0].name.replace(" ", "-")}-${category.products[0].id}`}
+                                                    href={`/products/${category.products[0].name.replace(/ /g, '-')}-${category.products[0].id}`}
                                                     className="border border-cyan-600 text-cyan-600 hover:bg-cyan-600 hover:text-white px-2 py-1 rounded text-sm text-center"
                                                 >
                                                     <FontAwesomeIcon icon={faStar} /> Destacado

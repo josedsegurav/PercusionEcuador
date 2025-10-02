@@ -88,7 +88,7 @@ export default function ProductCard({ product, badge }: { product: Product, badg
                 {/* Quick Actions */}
                 <div className="absolute top-3 right-3">
                     <Link
-                        href={`/products/${product.name.replace(" ", "-")}-${product.id}`}
+                        href={`/products/${product.name.replace(/ /g, '-')}-${product.id}`}
                         className="w-10 h-10 flex items-center justify-center rounded-full shadow hover:bg-gray-100"
                     >
                         <FontAwesomeIcon icon={faEye} />
