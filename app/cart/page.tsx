@@ -82,13 +82,13 @@ export default function CartPage() {
       <section className="py-10 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-            <div className="trust-badge">
+            {/* <div className="trust-badge">
               <div className="mb-3">
                 <FontAwesomeIcon icon={faTruck} className="w-10 h-10 text-blue-600 mx-auto text-4xl" />
               </div>
               <h5 className="font-semibold text-lg mb-2">Envío Gratuito</h5>
               <p className="text-gray-600 mb-0">En pedidos superiores a $50</p>
-            </div>
+            </div> */}
 
             <div className="trust-badge">
               <div className="mb-3">
