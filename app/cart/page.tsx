@@ -1,6 +1,10 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { faAward, faHeadphones, faShield, faTruck } from '@fortawesome/free-solid-svg-icons';
+import { faAward,
+  faHeadphones,
+  faShield,
+  // faTruck
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useCartStore from '@/store/cartStore';
 import CartContainer from '@/components/cartContainer';

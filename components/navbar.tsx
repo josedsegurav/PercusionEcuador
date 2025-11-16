@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faSignOut } from "@fortawesome/free-solid-svg-icons";
@@ -14,49 +14,50 @@ import { createClient } from "@/lib/supabase/client";
 import { User } from "@/app/utils/types";
 import { useRouter } from "next/navigation";
 
-export default function Navbar() {
-  const supabase = createClient();
+export default function Navbar({ user }: { user: User | null }) {
+  const supabase = useMemo(() => createClient(), []);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userId, setUserId] = useState<User | null>(null);
   const { getCartCount } = useCartStore();
   const router = useRouter();
 
-
   useEffect(() => {
-    // Get initial session
-    const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setLoggedIn(session ? true : false);
-
-      if (session) {
-        const { data: userData } = await supabase.from("users").select("*")
-          .eq("email", session.user?.email).single() as { data: User };
-        setUserId(userData);
+    const getUser = async () => {
+      if (user) {
+        try {
+          const { data: userData } = await supabase.from("users").select("*")
+            .eq("email", user?.email).single() as { data: User };
+          setLoggedIn(true);
+          setUserId(userData);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          setLoggedIn(false);
+          setUserId(null);
+        }
       } else {
+        // Reset state when user logs out
+        setLoggedIn(false);
         setUserId(null);
       }
     };
 
-    getInitialSession();
+    getUser();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setLoggedIn(session ? true : false);
-
-        if (session) {
-          const { data: userData } = await supabase.from("users").select("*")
-            .eq("email", session.user?.email).single() as { data: User };
-          setUserId(userData);
-        } else {
-          setUserId(null);
-        }
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setLoggedIn(false);
+        setUserId(null);
+      } else if (event === 'SIGNED_IN' && session.user) {
+        getUser();
       }
-    );
+    });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, supabase]);
 
   const logout = async () => {
     await supabase.auth.signOut();

@@ -8,6 +8,8 @@ config.autoAddCss = false
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
+import { createClient } from "@/lib/supabase/server";
+import { User } from "@/app/utils/types";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -30,6 +32,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  let userInfo: User | null = null;
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    userInfo = user as unknown as User;
+  } else {
+    userInfo = null;
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -40,7 +54,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
+          <Navbar user={userInfo} />
           {children}
           <Footer />
           <Toaster />
